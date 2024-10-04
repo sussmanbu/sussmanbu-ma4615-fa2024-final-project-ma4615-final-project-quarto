@@ -1,0 +1,20 @@
+project:
+  type: website
+  execute-dir: project
+  resources: scripts
+
+website:
+  title: "MA [46]15 Final Project"
+  navbar:
+    right:
+      - about.qmd
+      - big_picture.qmd
+      - analysis.qmd
+      - data.qmd
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
+
+

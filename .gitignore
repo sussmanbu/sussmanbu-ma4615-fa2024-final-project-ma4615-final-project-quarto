@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+/.quarto/
+/dataset-ignore/
+.DS_Store
+Thumbs.db
+/_site/
