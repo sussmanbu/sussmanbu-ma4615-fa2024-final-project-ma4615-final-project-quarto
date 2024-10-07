@@ -22,13 +22,15 @@ This comes from the file `about.qmd`.
 This is a website for the final project for MA[46]15 Data Science with R by Team TEAMNAME.
 The members of this team are below.
 
-## Chang Liu
+## Yifei Zhang
+Major in Econ & Math, Junior, From China
 
-Luis is a Ph.D. student in Stats and is the Teaching Fellow for the course.
+## Primah Muwanga 
+Major in Data Science & Engineering Science Minor, Junior, From Uganda
 
-## Dan Sussman
+## Xiang Fu
 
-Dan is a professor in the Math/Stat department and is the instructor for the course.
+Major in Data Science & Minor in Statistics, Junior, From China
 
 <!-- Please leave in the information below -->
 
