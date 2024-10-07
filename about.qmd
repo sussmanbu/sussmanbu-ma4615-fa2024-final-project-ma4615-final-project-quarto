@@ -19,10 +19,12 @@ about:
 
 This comes from the file `about.qmd`.
 
-This is a website for the final project for MA[46]15 Data Science with R by Team TEAMNAME.
+This is a website for the final project for MA415 Data Science with R by Team Thirteen
 The members of this team are below.
 
 ## Marissa Alfieri 
 Marissa is a Junior studying Psychology and Education & Human Development with a minor in Statistics. Her Github page is: https://github.com/marissa-alfieri
 
+## Sara Patel
+Sara is a Junior in Data Science with a minor in Innovation & Entreprenuership. Her GitHub page is: https://github.com/SaraPatel0
 
