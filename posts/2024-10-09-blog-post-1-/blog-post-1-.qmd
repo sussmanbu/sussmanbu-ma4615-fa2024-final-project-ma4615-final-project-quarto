@@ -1,0 +1,32 @@
+---
+title: "Blog Post 1 "
+author: "Team Thirteen"
+date: "2024-10-09"
+date-modified: "2024-10-09"
+---
+
+Data set 1
+
+U.S. Department of Education: College Scorecard
+https://collegescorecard.ed.gov/data/
+
+The U.S. Department of Education's College Scorecard dataset provides comprehensive data on institutions of higher education, aiming to enhance transparency regarding student outcomes and institutional characteristics. The dataset comprises 174 columns and 214,886 rows, covering data from the 1996-97 to the 2022-23 academic years. It includes institution-level data, such as enrollment, student aid, costs, and outcomes, and field of study-level data that provides insights on debt at graduation and earnings one year post-graduation. Originally collected to help prospective students make informed choices, the dataset highlights disparities in education related to race, socio-economic status, debt accumulation, and federal funding distribution. Although the data can be cleaned and loaded, its large size may present challenges in analysis.
+
+
+
+Data set 2
+
+Age-by-Race Specific Crime Rates, 1965-1985: [United States]
+https://catalog.data.gov/dataset/age-by-race-specific-crime-rates-1965-1985-united-states-b16aa
+
+It is not clear in the description how many rows and columns there are in the dataset, but the variables are categorized into 4 subgroups per race and age over a 21 year time frame. The data was collected by the FBI “Uniform Crime Reports: Crime in the United States” and was aggregated. Using this data, we can answer questions that relate age-by-race crime to crime rates over 21 years. We can also take into account current events of the 1960s-1980s to consider if specific age cohorts had more reported crime rates. For example, we can consider the Baby Boom era and relate it to crime rates post WW2. We can also see which types of crimes were most committed by age-race group per period of time and see if this data is reflective of national crime trends. A challenge I foresee is being able to synthesize categorized data like this in the most effective way. A way to combat this is to focus on a specific crime across the 21 year time frame and analyze the relationship between age-by-race subgroups rather than try to understand many different variables of the same category all at once.
+
+
+
+Data set 3
+
+Data Police shootings
+https://www.kaggle.com/datasets/mrmorj/data-police-shootings?resource=download
+
+This dataset has 14 columns and 5.4K rows, and contains information on every fatal shooting made by a police officer in the US. Some variables include race, whether the victim was armed, age, gender, and location. This data was initially collected since the FBI and the Centers for Disease Control and Prevention log fatal shootings by police, but officials acknowledge that their data is incomplete. The dataset is able to be loaded and cleaned but seems to have some entries missing race data on victims, which might be a problem. With this information, we would like to draw insight on how race, gender, and age play into fatal police shooting trends.
+
