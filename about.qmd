@@ -23,16 +23,16 @@ This is a website for the final project for MA[46]15 Data Science with R by Team
 The members of this team are below.
 
 ## Yifei Zhang
-Major in Econ & Math, Junior, From China
+Major in Economics & Math, From China
 
 ## Primah Muwanga 
-Major in Data Science & Engineering Science Minor, Junior, From Uganda
+Major in Data Science & Engineering Science Minor, From Uganda
 
 ## Xiang Fu
 Major in Data Science & Minor in Statistics
 
 ## Nora O'Neill
-Major in Math, Concentration in Statistics, Minor in Business, From Newton, Massachusetts 
+Major in Math;concentration in statistics, Minor in Business, From Newton, Massachusetts 
 
 ## Tejas Kaur
 Major in Economics and Math, Minor in Data Science, From Jaipur, India 
