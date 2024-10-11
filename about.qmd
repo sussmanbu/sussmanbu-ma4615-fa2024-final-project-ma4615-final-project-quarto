@@ -13,29 +13,39 @@ about:
     - icon: github
       text: Github
       href: https://github.com/sussmanbu/
+      
+      
 
 ---
-
-
 This comes from the file `about.qmd`.
 
 This is a website for the final project for MA[46]15 Data Science with R by Team TEAMNAME.
 The members of this team are below.
 
 ## Yifei Zhang
-Major in Economics & Math, From China
+Major: Economics & Math
+From: China
 
 ## Primah Muwanga 
-Major in Data Science & Engineering Science Minor, From Uganda
+Major: Data Science 
+Minor: Engineering Science
+From: Uganda
 
 ## Xiang Fu
-Major in Data Science & Minor in Statistics
+Major: 
+Data Science
+Minor: Statistics 
+From: China 
 
 ## Nora O'Neill
-Major in Math;concentration in statistics, Minor in Business, From Newton, Massachusetts 
+Major: Math(Concentration in Statistics)
+Minor: Business
+From:   Newton, Massachusetts 
 
 ## Tejas Kaur
-Major in Economics and Math, Minor in Data Science, From Jaipur, India 
+Major: Economics and Math
+Minor: Data Science 
+From: Jaipur, India 
 
 <!-- Please leave in the information below -->
 
