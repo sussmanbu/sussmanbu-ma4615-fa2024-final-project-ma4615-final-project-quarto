@@ -22,6 +22,9 @@ This comes from the file `about.qmd`.
 This is a website for the final project for MA415 Data Science with R by Team Thirteen
 The members of this team are below.
 
+##Sumtung Lo 
+Sumtung is a Senior in Economic&Mathematics. Her Github page is https: https://github.com/sumtunglo
+
 ## Marissa Alfieri 
 Marissa is a Junior studying Psychology and Education & Human Development with a minor in Statistics. Her Github page is: https://github.com/marissa-alfieri
 
