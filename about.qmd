@@ -32,4 +32,7 @@ Sara is a Junior in Data Science with a minor in Innovation & Entreprenuership. 
 Weizhao is a Senior in Apllied Math. 
 His Github page is: https://github.com/Weizhao-Liu
 
+## Uyen Chu
+Uyen is a Sophmore majoring in Biology and minoring in CS.
+Her GitHub is https://github.com/uchu04
 
