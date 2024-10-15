@@ -22,7 +22,7 @@ This comes from the file `about.qmd`.
 This is a website for the final project for MA415 Data Science with R by Team Thirteen
 The members of this team are below.
 
-##Sumtung Lo 
+## Sumtung Lo 
 Sumtung is a Senior in Economic&Mathematics. Her Github page is https: https://github.com/sumtunglo
 
 ## Marissa Alfieri 
