@@ -24,28 +24,37 @@ The members of this team are below.
 
 ## Yifei Zhang
 Major: Economics & Math
+
 From: China
 
 ## Primah Muwanga 
 Major: Data Science 
+
 Minor: Engineering Science
+
 From: Uganda
 
 
 ## Xiang Fu
 Major: Data Science
+
 Minor: Statistics 
+
 From: China 
 
 ## Nora O'Neill
 Major: Math(Concentration in Statistics)
+
 Minor: Business
+
 From:   Newton, Massachusetts
 
 
 ## Tejas Kaur
 Major: Economics and Math
+
 Minor: Data Science 
+
 From: Jaipur, India 
 
 

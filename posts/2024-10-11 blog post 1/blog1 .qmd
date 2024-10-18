@@ -1,9 +1,22 @@
+---
+title: "Blog Post 1"
+subtitle: ""
+author: "Group 1"
+date: "2024-10-18"
+# image: ""
+image-alt: ""
+categories: []
+date-modified: "2024-10-18"
+draft: false
+---
+
+
 Summaries: Choosing a Data Set
 
 National Student Loan Data System: https://catalog.data.gov/dataset/national-student-loan-data-system-722b0
-The National Student Loan data contains information about loans and grants awarded to students under Title IV of the Higher Education Act of 1965, which refers to federal financial aid programs for postsecondary education. The data includes various loan categories like Direct Loans, Federal Family Education Loans (FFEL), and Perkins Loans. It spans the entire lifecycle of these loans, from disbursement to closure. Most files contain between 10 to 25 columns, with key information such as loan types, disbursement amounts, repayment plans, deferment and forbearance details, and loan statuses. These columns typically include financial metrics like “Dollars Outstanding”, “Recipients”, and “Number of Loans”. The files also vary in terms of row counts; some are relatively small, like summary files with a few hundred rows, while detailed loan or quarterly activity reports contain thousands of rows (ranging from 3798 to 4057 rows). Some files also have additional formatting and metadata rows.
+The National Student Loan data contains information about loans and grants awarded to students under Title IV of the Higher Education Act of 1965, which refers to federal financial aid programs for post secondary education. The data includes various loan categories like Direct Loans, Federal Family Education Loans (FFEL), and Perkins Loans. It spans the entire life cycle of these loans, from disbursement to closure. Most files contain between 10 to 25 columns, with key information such as loan types, disbursement amounts, repayment plans, deferment and forbearance details, and loan statuses. These columns typically include financial metrics like “Dollars Outstanding”, “Recipients”, and “Number of Loans”. The files also vary in terms of row counts; some are relatively small, like summary files with a few hundred rows, while detailed loan or quarterly activity reports contain thousands of rows (ranging from 3798 to 4057 rows). Some files also have additional formatting and metadata rows.
 
-This data was originally collected to centralize and monitor federal student aid, helpling policymakers, educational institutions, and borrowers manage financial aid efficiently. Main challenges might include cleaning and consolidating disparate files and handling large amounts of historical data, especially if some files are incomplete or inconsistent in format. Some key questions to consider might include loan default rates over time, trends in deferment or forbearance, and the impact of repayment plans on loan outcomes. Additionally, we can explore how loan activity varies across schools and regions, using the quarterly reports to identify trends in loan disbursements and borrower demographics. Another key question would be how the Public Service Loan Forgiveness and Teacher Loan Forgiveness programs are affecting long-term repayment patterns and loan forgiveness rate across various borrower groups.
+This data was originally collected to centralize and monitor federal student aid, helping policymakers, educational institutions, and borrowers manage financial aid efficiently. Main challenges might include cleaning and consolidating disparate files and handling large amounts of historical data, especially if some files are incomplete or inconsistent in format. Some key questions to consider might include loan default rates over time, trends in deferment or forbearance, and the impact of repayment plans on loan outcomes. Additionally, we can explore how loan activity varies across schools and regions, using the quarterly reports to identify trends in loan disbursements and borrower demographics. Another key question would be how the Public Service Loan Forgiveness and Teacher Loan Forgiveness programs are affecting long-term repayment patterns and loan forgiveness rate across various borrower groups.
 
 
 Crash Reporting-Drivers Data: 
