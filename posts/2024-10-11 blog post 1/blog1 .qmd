@@ -1,11 +1,8 @@
 ---
-title: "Blog Post 1"
+title: "Blog Post 1: Choosing a Dataset"
 subtitle: ""
 author: "Group 1"
 date: "2024-10-18"
-# image: ""
-image-alt: ""
-categories: []
 date-modified: "2024-10-18"
 draft: false
 ---
