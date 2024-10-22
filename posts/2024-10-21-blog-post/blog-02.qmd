@@ -1,9 +1,39 @@
 ---
-title: "Blog Post 2: Data background"
+title: "Blog Post 2: Data Background"
 subtitle: ""
 author: "Group 1"
 date: "2024-10-21"
 date-modified: "2024-10-21"
 draft: false
 ---
+
+## Where does the data come from? Who collected it? Why was it collected? Are you able to find the data from the original source?
+
+The data comes from the Automated Crash Reporting System (ACRS) of the Maryland State Police. It includes traffic collision reports from Montgomery County Police, Gaithersburg Police, Rockville Police, and the Maryland National Capital Park Police. The data was collected by the ACRS and local law enforcement agencies. The data was collected to document and analyze traffic collisions involving motor vehicle operators on county and local roads in Montgomery County. The purpose of this data collection might be to help enforcement agencies understand the circumstances of traffic collisions. It can be found on the original website, which is the Montgomery County government data site. 
+
+## Are there any issues you can see with how the data was collected? What is the sample population? Are there reasons to think the sample is biased in some way?
+
+According to the information from the original government website providing the data, since the collision reports are based on preliminary information supplied to the Police Department by the reporting parties, there are some potential issues with the data collection process, including:
+
+- Information not yet verified by further investigation
+- Information that may include verified and unverified collision data 
+- Preliminary collision classifications may be changed at a later date based on further investigation 
+- Information may include mechanical or human error
+
+The sample population consists of motor vehicle operators involved in traffic collisions on county and local roadways within Montgomery County, Maryland. The dataset might be biased because it may not include minor collisions or unreported incidents.
+
+## How is this data used? What questions have others ask about this data?
+
+The data is widely used by government agencies, law enforcement, transportation planners, and other stakeholders who might be looking into improving road safety and traffic management. By analyzing the collision patterns, they can identify areas that might be prone to accidents and take corrective measures. The dataset also includes information on driver at-fault status, substance abuse, and distractions providing insights into common behavioral causes of collisions. This can inform stricter law enforcement measures. Officials may also use this data to assess the effectiveness of traffic regulations. This data can also be used by insurance companies for underwriting and to assess claims involving collisions. Some questions that others might ask about the data are:
+
+- Which roads or intersections are leading to the highest collision rates and why? This will help identify accident hotspots that need infrastructural improvements
+- What is the correlation between weather conditions and the rate of accidents? This can inform them on whether or not they need more safety warnings during hazardous weather conditions that might help people navigate these conditions better and potentially lead to fewer collisions
+- What time of the day do most accidents occur? Understanding this better can help change street lighting or traffic patterns to make driving at night easier
+- Are there certain car models that have more accidents than others? This could lead to a ban on certain kinds of vehicles or even help manufacturers fix flaws 
+
+## Has there been other research on the same data? Is this data being used for some policy decisions? 
+
+This data provided by the state of New Jersey is being used by the New Jersey Department of Transportation (NJDOT) through a database called Safety Voyager. This tool allows them to utilize data like this set as well as similar datasets from other counties in the state, to visualize and analyze crash data. A dataset like ours is used in combination with the surrounding towns to identify areas of high risk. This data is also used to better safety improvement projects such as The Highway Safety Improvement Project (HSIP) which gathers this information from NJDOT to reduce crashes in crash-dense areas.  Additionally, the New Jersey Transportation Planning Authority (NJTPA) also refers to information synthesized from our data to create overall safety examinations and better planning efforts. Along with NJDOT, HSIP, and NJTPA, the New Jersey Safety Outcomes and Data Warehouse (NJ-SHO) integrates crash data such as ours as well as health consequences to investigate public safety. Overall, it is mainly the state departments of New Jersey that are leading research projects with these crash reports, and creating programs and initiatives that will encourage future safety measures in the state.
+
+
 
