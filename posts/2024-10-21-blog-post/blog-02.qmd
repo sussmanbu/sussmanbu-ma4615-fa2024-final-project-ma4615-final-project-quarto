@@ -1,0 +1,9 @@
+---
+title: "Blog Post 2: Data background"
+subtitle: ""
+author: "Group 1"
+date: "2024-10-21"
+date-modified: "2024-10-21"
+draft: false
+---
+
