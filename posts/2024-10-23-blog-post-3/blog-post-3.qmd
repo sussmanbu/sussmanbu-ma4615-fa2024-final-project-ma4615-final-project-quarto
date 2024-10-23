@@ -6,3 +6,78 @@ date-modified: "2024-10-23"
 draft: FALSE
 ---
 
+Our team, after exploring the data from the U.S. Department of Education for the College Scorecard that was presented in Blog Post 2, decided to shift to a new dataset. The previous one had data spanning years and covered institutional characteristics, enrollment, student aid, and student outcomes of colleges across the U.S. However, the data was dispersed across many files - one for each year from 1996 to 2023 - and was very inconsistent across yearly datasets. Specifically, there were dozens of null columns in earlier sets that were filled in for later ones, making it difficult to see how certain factors change over time. Overall, this dataset on student completion, debt and repayment, earnings, and more was very inconsistent and scattered, making it difficult for us to use and draw insight from. 
+
+We have since shifted to a dataset on fatal police shootings that is much more cohesive. This dataset has 14 columns and 5.4K rows, and contains information on every fatal shooting made by a police officer in the US. Some variables include race, whether the victim was armed, their age, gender, and location. This data was initially collected since the FBI and the Centers for Disease Control and Prevention log fatal shootings by police, but officials acknowledge that their data is incomplete. The dataset is able to be loaded and cleaned but seems to have some entries missing race data on victims. There are some possible biases to think about - this dataset may contain more shootings that were digitally documented and therefore officers felt pressure to record the instance officially. This means that there may be events that were not recorded with a camera or an audio device, so nobody knew to document the instance other than the offensive officer who may not want it on record.
+
+With this data, we would like to draw insight on how race, gender, and age play into fatal police shooting trends.
+
+```{r}
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+data <- read_csv("dataset/fatal-police-shootings-data.csv")
+
+# Replace race codes with descriptive labels
+data$race <- recode(data$race,
+                    "W" = "White, non-Hispanic",
+                    "B" = "Black, non-Hispanic",
+                    "A" = "Asian",
+                    "N" = "Native American",
+                    "H" = "Hispanic",
+                    "O" = "Other",
+                    .default = "Unknown")
+
+# Create the bar plot 
+ggplot(data, aes(x = race, fill = race)) +
+  geom_bar() +
+  labs(title = "Number of Shootings by Race",
+       x = "Race",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+# Load dplyr package for recode function
+library(dplyr)
+
+# Replace gender codes with descriptive labels
+data$gender <- recode(data$gender,
+                      "M" = "Male",
+                      "F" = "Female",
+                      .default = "Other")
+
+# Create the bar plot 
+ggplot(data, aes(x = gender, fill = gender)) +
+  geom_bar() +
+  labs(title = "Number of Shootings by Gender",
+       x = "Gender",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+# Replace missing or NA age values with a placeholder 
+data$age[is.na(data$age) | data$age == ""] <- -1
+
+# Bin the age values into categories
+data$age_group <- cut(data$age, 
+                      breaks = c(-Inf, 0, 20, 30, 40, 50, 60, 70, 80, Inf), 
+                      labels = c("Unknown", "0-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "80+"),
+                      right = FALSE)
+
+# Create the bar plot 
+ggplot(data, aes(x = age_group, fill = age_group)) +
+  geom_bar() +
+  labs(title = "Number of Shootings by Age Group",
+       x = "Age Group",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
