@@ -1,0 +1,8 @@
+---
+title: "Blog Post 3"
+author: "Group Thirteen "
+date: "2024-10-23"
+date-modified: "2024-10-23"
+draft: FALSE
+---
+
