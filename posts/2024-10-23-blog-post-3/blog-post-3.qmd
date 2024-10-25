@@ -13,7 +13,7 @@ We have since shifted to a dataset on fatal police shootings that is much more c
 With this data, we would like to draw insight on how race, gender, and age play into fatal police shooting trends.
 
 
-```{r}
+```{r,echo = FALSE}
 
 # Load required libraries
 library(ggplot2)
@@ -42,7 +42,7 @@ ggplot(data, aes(x = race, fill = race)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-```{r}
+```{r,echo = FALSE}
 # Load dplyr package for recode function
 library(dplyr)
 
@@ -64,7 +64,7 @@ ggplot(data, aes(x = gender, fill = gender)) +
 ```
 
 
-```{r}
+```{r,echo = FALSE}
 # Replace missing or NA age values with a placeholder 
 data$age[is.na(data$age) | data$age == ""] <- -1
 
