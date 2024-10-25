@@ -12,72 +12,7 @@ We have since shifted to a dataset on fatal police shootings that is much more c
 
 With this data, we would like to draw insight on how race, gender, and age play into fatal police shooting trends.
 
-```{r}
+![](/Users/marissaalfieri/ma-4615-fa24-final-project-group-thirteen/images/Race.png)
 
-# Load required libraries
-library(ggplot2)
-library(dplyr)
-library(readr)
-
-data <- read_csv("dataset/fatal-police-shootings-data.csv")
-
-# Replace race codes with descriptive labels
-data$race <- recode(data$race,
-                    "W" = "White, non-Hispanic",
-                    "B" = "Black, non-Hispanic",
-                    "A" = "Asian",
-                    "N" = "Native American",
-                    "H" = "Hispanic",
-                    "O" = "Other",
-                    .default = "Unknown")
-
-# Create the bar plot 
-ggplot(data, aes(x = race, fill = race)) +
-  geom_bar() +
-  labs(title = "Number of Shootings by Race",
-       x = "Race",
-       y = "Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-```{r}
-# Load dplyr package for recode function
-library(dplyr)
-
-# Replace gender codes with descriptive labels
-data$gender <- recode(data$gender,
-                      "M" = "Male",
-                      "F" = "Female",
-                      .default = "Other")
-
-# Create the bar plot 
-ggplot(data, aes(x = gender, fill = gender)) +
-  geom_bar() +
-  labs(title = "Number of Shootings by Gender",
-       x = "Gender",
-       y = "Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
-
-```{r}
-# Replace missing or NA age values with a placeholder 
-data$age[is.na(data$age) | data$age == ""] <- -1
-
-# Bin the age values into categories
-data$age_group <- cut(data$age, 
-                      breaks = c(-Inf, 0, 20, 30, 40, 50, 60, 70, 80, Inf), 
-                      labels = c("Unknown", "0-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "80+"),
-                      right = FALSE)
-
-# Create the bar plot 
-ggplot(data, aes(x = age_group, fill = age_group)) +
-  geom_bar() +
-  labs(title = "Number of Shootings by Age Group",
-       x = "Age Group",
-       y = "Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
+![](/Users/marissaalfieri/ma-4615-fa24-final-project-group-thirteen/images/Gender.png)
+![](/Users/marissaalfieri/ma-4615-fa24-final-project-group-thirteen/images/Age.png)
