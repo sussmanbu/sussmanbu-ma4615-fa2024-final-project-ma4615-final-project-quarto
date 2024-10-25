@@ -1,0 +1,11 @@
+---
+title: "Blog Post 2 "
+author: "Team thirteen "
+date: "2024-10-18"
+date-modified: "2024-10-18"
+draft: FALSE
+---
+
+After receiving feedback about our data sets from Prof. Sussman, we decided to take a closer look at Data Set 1. The data was collected by the U.S. Department of Education as a comprehensive data set of college characteristics, enrollment, aid, costs, and student outcomes of all U.S. institutions from 1996-2023. The file contains separate csv files for each year which will pose a potential issue because there is so much data. In addition, it is very hard to interpret all of the variable names in the csv file. From what we could tell, there is data about proportions of admissions, average income after graduation, tuition costs, debt/loans taken, and demographic details partitioned between male and female students/applicants. There are also a lot of N/A fields in the data that would require extra cleaning and interpretation. 
+
+The College Scorecard has two separate data sets, one for institution characteristics, and broken down by field study at each institution. 
