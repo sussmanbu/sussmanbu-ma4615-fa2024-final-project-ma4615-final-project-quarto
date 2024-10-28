@@ -13,7 +13,6 @@ This comes from the file `data.qmd`.
 Your first steps in this project will be to find data to work on.
 
 
-
 Initially, you will study _one dataset_ but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable.
 Data from the census, weather data, economic data, are all relatively easy to combine with other data with time/location components.
 
