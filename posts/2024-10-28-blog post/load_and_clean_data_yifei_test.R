@@ -7,6 +7,7 @@ library(lubridate)
 # read data
 data <- read.csv("C:/Users/wcx15/Documents/car crash test/data/Crash_Reporting_-_Drivers_Data.csv", stringsAsFactors = FALSE)
 
+
 # remove columns with a high percentage of missing values
 threshold <- 0.8
 data_clean <- data |> select_if(~mean(is.na(.)) < threshold)
