@@ -6,14 +6,14 @@ date-modified: "2024-10-23"
 draft: FALSE
 ---
 
-Our team, after exploring the data from the U.S. Department of Education for the College Scorecard that was presented in Blog Post 2, decided to shift to a new dataset. The previous one had data spanning years and covered institutional characteristics, enrollment, student aid, and student outcomes of colleges across the U.S. However, the data was dispersed across many files - one for each year from 1996 to 2023 - and was very inconsistent across yearly datasets. Specifically, there were dozens of null columns in earlier sets that were filled in for later ones, making it difficult to see how certain factors change over time. Overall, this dataset on student completion, debt and repayment, earnings, and more was very inconsistent and scattered, making it difficult for us to use and draw insight from. 
+Our team, after exploring the data from the U.S. Department of Education for the College Scorecard that was presented in Blog Post 2, decided to shift to a new dataset. The previous one had data spanning years and covered institutional characteristics, enrollment, student aid, and student outcomes of colleges across the U.S. However, the data was dispersed across many files - one for each year from 1996 to 2023 - and was very inconsistent across yearly datasets. Specifically, there were dozens of null columns in earlier sets that were filled in for later ones, making it difficult to see how certain factors change over time. Overall, this dataset on student completion, debt and repayment, earnings, and more was very inconsistent and scattered, making it difficult for us to use and draw insight from.
 
 We have since shifted to a dataset on fatal police shootings that is much more cohesive. This dataset has 14 columns and 5.4K rows, and contains information on every fatal shooting made by a police officer in the US. Some variables include race, whether the victim was armed, their age, gender, and location. This data was initially collected since the FBI and the Centers for Disease Control and Prevention log fatal shootings by police, but officials acknowledge that their data is incomplete. The dataset is able to be loaded and cleaned but seems to have some entries missing race data on victims. There are some possible biases to think about - this dataset may contain more shootings that were digitally documented and therefore officers felt pressure to record the instance officially. This means that there may be events that were not recorded with a camera or an audio device, so nobody knew to document the instance other than the offensive officer who may not want it on record.
 
 With this data, we would like to draw insight on how race, gender, and age play into fatal police shooting trends.
 
-![Race Image](images/Race.png)
+![Race Image](/images/Race.png)
 
-![Gender Image](images/Gender.png)
+![Gender Image](/images/Gender.png)
 
-![Age Image](images/Age.png)
+![Age Image](/images/Age.png)
