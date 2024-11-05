@@ -34,18 +34,6 @@ We are using data from `fatal-police-shootings-data.csv` with 14 variables:
 
 Our dataset was fairly clean when we found it, making it relatively easy to interpret and work with. However, our “Race” variable is given by letters - A, W, H, B, N, and O - so are making an extra column “Race_Full” that has the full names of these variables such as “Asian” instead of “A” and “Native American” instead of “N”.
 
-To do this, we ran the following code: 
-
-data <- data |>
-  mutate(Race_Full = recode(race,
-                            "W" = "White, non-Hispanic",
-                            "B" = "Black, non-Hispanic",
-                            "A" = "Asian",
-                            "N" = "Native American",
-                            "H" = "Hispanic",
-                            "O" = "Other",
-                            .default = "Unknown"))
-
 The cleaned data could be found here: [Download the cleaning script](load_and_clean_data.R)
 
 We do not plan to utilize any packages that haven’t already been covered in class as we feel that we can do a thorough analysis without additional ones.
