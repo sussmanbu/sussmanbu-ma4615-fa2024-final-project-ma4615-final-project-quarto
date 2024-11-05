@@ -9,27 +9,28 @@ draft: false
 
 Our data set contains information on every fatal shooting made by a police officer in the US. This data was initially collected since the FBI and the Centers for Disease Control and Prevention log fatal shootings by police, but officials acknowledge that their data is incomplete. To combat this, our dataset aims to create a more comprehensive picture of police shootings, in what cases they come about, and which demographic groups these shootings tend to involve.
 
-We are using data from fatal-police-shootings-data.csv with 14 variables. 
-* “Id” is presumably their criminal id number. It is not specific to the order of the date of the shooting so I think it is assigned based on another variable.
-* “Name” is the name of the person that got shot
-* “Date” is the day they were shot from January 2015 - June 2020
-* “Manner_of_death” is how they were killed by the police (shot/shot and tasered)
-* “Armed” is whether they were carrying a “weapon” at the time of arrest and shooting
-* “Age” is age when shot
-* “Gender” indicates whether male or femaile
-* “Race” 
-    - A = asian
-    - W = white
-    - H = hispanic
-    - B = black 
-    - N = native american
-    - O = other
-* “City” location where they were shot
-* “State” what state the city is in
-* “Signs_of_mental_illness” whether or not the person shot was mentally ill
-* “Threat_level” indicates whether the police was in a threatened position (attack or other)
-* “Flee” method of fleeing if they were, or if they weren’t 
-* “Body_camera” whether the police was using a body camera during arrest and shooting
+We are using data from `fatal-police-shootings-data.csv` with 14 variables:
+
+* **Id**: Presumably their criminal ID number. It is not specific to the order of the date of the shooting, so I think it is assigned based on another variable.
+* **Name**: The name of the person that got shot.
+* **Date**: The day they were shot, from January 2015 - June 2020.
+* **Manner_of_death**: How they were killed by the police (shot/shot and tasered).
+* **Armed**: Whether they were carrying a “weapon” at the time of arrest and shooting.
+* **Age**: Age when shot.
+* **Gender**: Indicates whether male or female.
+* **Race**: 
+    - A = Asian
+    - W = White
+    - H = Hispanic
+    - B = Black
+    - N = Native American
+    - O = Other
+* **City**: Location where they were shot.
+* **State**: What state the city is in.
+* **Signs_of_mental_illness**: Whether or not the person shot was mentally ill.
+* **Threat_level**: Indicates whether the police were in a threatened position (attack or other).
+* **Flee**: Method of fleeing if they were, or if they weren’t.
+* **Body_camera**: Whether the police were using a body camera during the arrest and shooting.
 
 Our dataset was fairly clean when we found it, making it relatively easy to interpret and work with. However, our “Race” variable is given by letters - A, W, H, B, N, and O - so are making an extra column “Race_Full” that has the full names of these variables such as “Asian” instead of “A” and “Native American” instead of “N”.
 
