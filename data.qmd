@@ -36,6 +36,8 @@ Our dataset was fairly clean when we found it, making it relatively easy to inte
 To do this, we ran the following code 
 
 ```{r}
+library(dplyr)
+
 data$race <- recode(data$race,
                     "W" = "White, non-Hispanic",
                     "B" = "Black, non-Hispanic",
