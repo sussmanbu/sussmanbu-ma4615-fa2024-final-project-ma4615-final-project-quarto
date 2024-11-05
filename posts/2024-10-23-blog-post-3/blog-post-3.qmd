@@ -16,6 +16,4 @@ With this data, we would like to draw insight on how race, gender, and age play 
 
 ![Gender Image](images/Gender.png)
 
-
 ![Age Image](images/Age.png)
-
