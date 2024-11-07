@@ -1,0 +1,89 @@
+
+
+
+
+```{r}
+# The top 10 roads with the highest number of crashes 
+library(dplyr)
+library(ggplot2)
+
+road_crash_data <- cleaned_dataset %>%
+  filter(!is.na(`Road.Name`)) %>%
+  count(`Road.Name`, sort = TRUE) %>%
+  top_n(10, n)
+
+ggplot(road_crash_data, aes(x = reorder(`Road.Name`, n), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 10 Roads with the Most Crashes",x = "Road Name", y = "Number of Crashes") +
+  theme_minimal()
+
+
+```
+
+
+
+```{r}
+# Distribution of Simplified Surface conditions by collision type
+
+library(dplyr)
+library(ggplot2)
+
+simplified_barplot_data <- cleaned_dataset %>%
+  mutate(Simplified_Surface = case_when(
+    Surface.Condition %in% c("Dry", "DRY") ~ "Dry",
+    Surface.Condition %in% c("Wet", "WET", "Water (standing, moving)", "WATER(STANDING/MOVING)") ~ "Wet",
+    Surface.Condition %in% c("Ice", "ICE", "Ice/Frost", "Snow", "SNOW", "Slush", "SLUSH") ~ "Snow/Ice",
+    Surface.Condition %in% c("Mud, Dirt, Gravel", "MUD, DIRT, GRAVEL") ~ "Mud/Dirt",
+    Surface.Condition %in% c("Sand", "SAND", "OIL", "Other", "OTHER") ~ "Other",
+    TRUE ~ "Unknown"
+  )) %>%
+  count(Collision.Type, Simplified_Surface) %>%
+  group_by(Collision.Type) %>%
+  mutate(percentage = n / sum(n))
+
+ggplot(simplified_barplot_data, aes(x = Collision.Type, y = percentage, fill = Simplified_Surface)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Distribution of Simplified Surface Conditions by Collision Type",
+       x = "Collision Type", y = "Percentage",
+       fill = "Surface Condition") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+
+
+```{r}
+# Monthly trend of Crash COunts by Year
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+
+crash_data <- cleaned_dataset %>%
+  mutate(
+    Crash_Date = ymd_hms(Crash.Date.Time), 
+    Year = year(Crash_Date),
+    Month = month(Crash_Date, label = TRUE)
+  ) %>%
+  filter(!is.na(Crash_Date))  
+
+monthly_data <- crash_data %>%
+  group_by(Year, Month) %>%
+  summarise(Crash_Count = n(), .groups = 'drop')
+
+ggplot(monthly_data, aes(x = Month, y = Crash_Count, group = Year)) +
+  geom_line() +
+  labs(
+    title = "Monthly Trend of Crash Counts by Year",
+    x = "Month", y = "Number of Crashes"
+  ) +
+  facet_wrap(~ Year, scales = "free_y") +
+  theme_minimal()
+
+```
+
+
