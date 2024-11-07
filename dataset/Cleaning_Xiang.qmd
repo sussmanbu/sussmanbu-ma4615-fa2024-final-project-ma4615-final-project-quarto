@@ -32,8 +32,6 @@ x <- getURL("https://raw.githubusercontent.com/sussmanbu/ma-4615-fa24-final-proj
 drivers_data <- read.csv(text = x)
 
 
-
-
 glimpse(drivers_data)
 
 skim(drivers_data)

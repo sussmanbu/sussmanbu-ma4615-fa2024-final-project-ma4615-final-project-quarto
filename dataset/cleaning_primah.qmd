@@ -6,7 +6,9 @@ draft: false
 ---
 ```{r}
 library(lubridate)
-
+library(dplyr)
+library(lubridate)
+library(skimr)
 ```
 
 ```{r}
@@ -14,10 +16,12 @@ crash_df <- read.csv("dataset-ignore/Crash_Reporting_Drivers_Data.csv")
 
 # remove columns with a high percentage of missing values
 
+# Define threshold for column selection
 threshold <- 0.8
 
-data_clean <- crash_df |> 
-  select_if(~mean(is.na(.)) < threshold)
+# Remove columns with a high percentage of missing values
+data_clean <- crash_df |>
+  select_if(~ mean(is.na(.)) < threshold)
 # convert case number column to character format
 
 data_clean$Local.Case.Number <- as.character(data_clean$Local.Case.Number)
@@ -47,12 +51,24 @@ data_clean$Route_Type[is.na(data_clean$Route_Type)] <- names(most_common_route)
 
 data_clean <- data_clean |> distinct()
 
+subset_data <- data_clean %>%
+  slice(1:1000) # Adjust based on your requirements
 
+```
+
+```{r}
+
+colnames()
+
+```
+
+
+```{r rds}
 
 # check the summary of cleaned data
 
 summary(data_clean)
 
-saveRDS(subset_data, "dataset/cleaned_dataset.rds")
+saveRDS(subset_data,"dataset/cleaned_dataset.rds")
 
 ```

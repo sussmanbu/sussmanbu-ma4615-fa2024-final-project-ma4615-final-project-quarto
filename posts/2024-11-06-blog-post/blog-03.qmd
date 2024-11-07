@@ -8,8 +8,9 @@ draft: false
 ---
 
 
+The road with the highest number of crashes is unnamed, with just under 125 crashes recorded. The road with the second-highest number of crashes is Georgia Avenue, which has significantly fewer crashes, totaling just under 50
 
-```{r}
+```{r p1}
 # The top 10 roads with the highest number of crashes 
 library(dplyr)
 library(ggplot2)
@@ -30,7 +31,7 @@ ggplot(road_crash_data, aes(x = reorder(`Road.Name`, n), y = n)) +
 
 
 
-```{r}
+```{r p2}
 # Distribution of Simplified Surface conditions by collision type
 
 library(dplyr)
@@ -60,10 +61,9 @@ ggplot(simplified_barplot_data, aes(x = Collision.Type, y = percentage, fill = S
 
 
 ```
+There is no definitive way to predict the time of year crashes will occur, but the trend shows a notable spike in crashes from January to March in 2015 and 2017. Additionally, there is often an increase in crashes in the month of November.
 
-
-
-```{r}
+```{r p3}
 # Monthly trend of Crash COunts by Year
 
 library(dplyr)
@@ -90,8 +90,43 @@ ggplot(monthly_data, aes(x = Month, y = Crash_Count, group = Year)) +
     x = "Month", y = "Number of Crashes"
   ) +
   facet_wrap(~ Year, scales = "free_y") +
-  theme_minimal()
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
+Out of the top 10 roads with the most crashes the surface conditions are mostly dry. 
+```{r p4}
+# Find the top 10 roads with the most crashes
+top_road_crash_data <- cleaned_dataset %>%
+  filter(!is.na(`Road.Name`)) %>%
+  count(`Road.Name`, sort = TRUE) %>%
+  top_n(10, n)
+
+# Filter the cleaned dataset to only include these top 10 roads
+top_road_conditions <- cleaned_dataset %>%
+  filter(`Road.Name` %in% top_road_crash_data$`Road.Name`) %>%
+  mutate(Simplified_Surface = case_when(
+    Surface.Condition %in% c("Dry", "DRY") ~ "Dry",
+    Surface.Condition %in% c("Wet", "WET", "Water (standing, moving)", "WATER(STANDING/MOVING)") ~ "Wet",
+    Surface.Condition %in% c("Ice", "ICE", "Ice/Frost", "Snow", "SNOW", "Slush", "SLUSH") ~ "Snow/Ice",
+    Surface.Condition %in% c("Mud, Dirt, Gravel", "MUD, DIRT, GRAVEL") ~ "Mud/Dirt",
+    Surface.Condition %in% c("Sand", "SAND", "OIL", "Other", "OTHER") ~ "Other",
+    TRUE ~ "Unknown"
+  )) %>%
+  count(`Road.Name`, Simplified_Surface) %>%
+  group_by(`Road.Name`) %>%
+  mutate(percentage = n / sum(n))
+
+# Plot the distribution of surface conditions for the top 10 roads
+ggplot(top_road_conditions, aes(x = reorder(`Road.Name`, -n), y = percentage, fill = Simplified_Surface)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip() +
+  labs(
+    title = "Surface Conditions for the Top 10 Roads with the Most Crashes",
+    x = "Road Name", y = "Percentage of Crashes",
+    fill = "Surface Condition"
+  ) +
+  theme_minimal()
+```
 
