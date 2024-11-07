@@ -1,4 +1,11 @@
-
+---
+title: "Blog Post 3: EDA"
+subtitle: ""
+author: "Group 1"
+date: "2024-11-06"
+date-modified: "2024-11-06"
+draft: false
+---
 
 
 
@@ -53,6 +60,7 @@ ggplot(simplified_barplot_data, aes(x = Collision.Type, y = percentage, fill = S
 
 
 ```
+
 
 
 ```{r}
