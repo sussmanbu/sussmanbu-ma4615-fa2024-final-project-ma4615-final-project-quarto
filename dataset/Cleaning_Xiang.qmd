@@ -51,7 +51,7 @@ Handle Date/Time Format
 ```{r}
 drivers_data_clean <- drivers_data_clean %>%
   mutate(
-    crash_date/time = mdy_hms(crash_date/time),
+    crash_date/time <- mdy_hms(crash_date/time),
     # create separate date and time columns if needed
     crash_date = date(crash_date/time),
     crash_time = format(crash_date/time, "%H:%M:%S")

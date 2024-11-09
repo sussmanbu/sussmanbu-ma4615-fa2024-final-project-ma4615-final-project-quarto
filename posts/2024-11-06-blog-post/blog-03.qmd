@@ -15,6 +15,8 @@ The road with the highest number of crashes is unnamed, with just under 125 cras
 library(dplyr)
 library(ggplot2)
 
+cleaned_dataset <- read.csv("/dataset/cleaned_dataset.rds")
+
 road_crash_data <- cleaned_dataset %>%
   filter(!is.na(`Road.Name`)) %>%
   count(`Road.Name`, sort = TRUE) %>%

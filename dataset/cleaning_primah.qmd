@@ -56,11 +56,6 @@ subset_data <- data_clean %>%
 
 ```
 
-```{r}
-
-colnames()
-
-```
 
 
 ```{r rds}
