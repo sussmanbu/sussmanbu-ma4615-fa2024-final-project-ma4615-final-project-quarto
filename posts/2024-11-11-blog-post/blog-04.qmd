@@ -1,0 +1,55 @@
+---
+title: "Blog Post 4: Additional Datasets"
+subtitle: ""
+author: "Group 1"
+date: "2024-11-11"
+date-modified: "2024-11-11"
+draft: false
+---
+
+## Pavement Condition Index
+
+Link: [Pavement Condition Index 2019](https://catalog.data.gov/dataset/pavement-condition-index-2019)
+
+The dataset I am combining is Montgomery County's Pavement Condition Index (PCI), which assesses the condition of 5,200 lane miles of roadways. PCI uses a scale from 0-100 to represent road conditions, where lower values indicate poorer conditions (e.g., PCI of 30), and higher values indicate better conditions (e.g., PCI of 80).
+
+I am matching the geographic locations of crashes with the corresponding PCI values for those road segments, allowing analysis of whether areas with poorer road conditions have higher crash rates. I have identified key variables needed to join the two datasets, focusing on road-related variables, such as road name, in the crash dataset.
+
+The challenge I encountered is that the road information between the two datasets doesn’t perfectly align. For example, one dataset has broader location descriptions than the other, making the merge challenging. My next steps are to refine the matching variables to improve accuracy and then conduct a more detailed analysis to examine the relationship between crash rates and PCI values.
+
+## Annual Highway Mileage Reports
+
+Link: [Annual Highway Mileage Reports](https://www.roads.maryland.gov/mdotsha/pages/Index.aspx?PageId=302)
+
+The primary dataset, Crash Reporting - Drivers Data, provides detailed information about traffic collisions on county and local roadways, including driver behaviors, environmental conditions, and collision outcomes. To enhance our analysis, we're incorporating the Annual Highway Mileage Reports from the Maryland Department of Transportation State Highway Administration, which offers complementary information about road infrastructure, usage patterns, and road classifications.
+
+The Highway Mileage Reports contain valuable metrics such as annual vehicle miles traveled, functional road classifications, and lane mileage data, which can provide context to our crash analysis. By combining these datasets, we can investigate whether certain road types experience higher crash rates, if traffic volume correlates with accident frequency, and how road infrastructure improvements might impact safety outcomes.
+
+The process of combining these datasets requires careful consideration of common linking elements. We're using geographic location as our primary joining key, specifically focusing on Montgomery County data. The crash data provides specific location information through latitude, longitude, and road names, while the highway mileage data is organized by county and road functional classifications. This allows us to analyze crash patterns in relation to road types and traffic volumes.
+
+However, we've encountered several challenges in the data integration process. First, the temporal alignment of the datasets requires attention, as we're working with crash data from 2015-2023 and need to match it with corresponding annual highway reports. Second, the granularity of data differs between sources - crash data is incident-specific, while highway data is aggregated at the county level. We're addressing this by creating appropriate aggregation levels that maintain analytical value while ensuring meaningful comparisons.
+
+Our next steps involve developing more sophisticated analysis methods to account for exposure rates (crashes per vehicle mile traveled) and examining how different road classifications correlate with crash severity. We're also planning to incorporate additional variables such as lane width and surface type from the highway data to build a more comprehensive understanding of infrastructure-related safety factors.
+
+## EMS Responses - NEMSIS Maryland State Data Set
+
+Link: [EMS Responses - Maryland State Data Set](https://nemsis.org/media/nemsis_states/repository.html?repository=maryland&file=Resources/MD_StateDataSet.xml&at=refs%2Fheads%2Frelease-3.5.0#Elements)
+
+To enhance our crash analysis, we are integrating the NEMSIS Maryland State Data Set for EMS responses, which includes detailed information on response times, dispatch times, and patient transfers. By aligning this data with the Montgomery County crash dataset, we aim to assess how EMS response times vary by crash severity, location, and road conditions. This integration will allow us to identify patterns in EMS efficiency, highlighting areas where response times may be longer due to factors like poor road quality or high traffic. One challenge in combining these datasets is accurately matching crashes with EMS records, as location and time details differ slightly across sources. Our next steps involve refining these joins to better understand how EMS response correlates with injury severity and crash frequency in specific areas.
+
+## Maryland's Traffic Volume Maps
+
+Link: [Maryland Traffic Volume Maps](https://roads.maryland.gov/Traffic_Volume_Maps/Traffic_Volume_Maps.pdf#page=1&zoom=100)
+
+For this analysis, we incorporated Maryland's Traffic Volume Maps data, which provide Annual Average Daily Traffic (AADT) metrics across multiple roadways in Montgomery County and other regions. By integrating this dataset with our crash and road condition data, we aim to examine how traffic volume correlates with crash rates, particularly in areas with varying pavement conditions. This data enables a more nuanced analysis of risk factors, as higher traffic volumes may influence crash frequency and severity. A key challenge in this integration has been aligning traffic volume data with the specific crash locations due to slight mismatches in geographic identifiers between datasets. Our next steps will involve refining the matching process to ensure accurate associations, followed by statistical analyses to identify any significant relationships between traffic volume, road conditions, and crash incidences.
+
+## Crash Reporting for Montgomery County
+
+Link: [Crime Dataset](https://catalog.data.gov/dataset/crime)
+
+To add in tandem with our Crash Reporting for Montgomery County, MD. I found a data set based on crime data in the same county. This data set offers variables such as location, crime committed, dates, and street names. This could offer some additional relationships we can graph with linear regression to see how crime in the county is related to crashes.
+
+This data set provides information from other counties as well, which we would need to filter out, additionally, it is not offered in csv format but we can reformat it and fit it into our project. Additionally, with thirty variables/columns, it may take more time to choose the right ones and investigate possible relationships without the main data set.
+
+This information comes from an official US website, DATA.GOV, and was shared for the purpose of public access. This dataset is updated daily by Montgomery Polic Department. 
+
