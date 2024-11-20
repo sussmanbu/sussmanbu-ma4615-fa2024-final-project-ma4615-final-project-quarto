@@ -3,12 +3,10 @@ title: "crash car data clean"
 author: "Fu Xiang"
 date: "2024-10-28"
 output: html_document
+execute:
+  enabled: false
 ---
----
-title: "Data Cleaning - Crash Reporting Drivers Data"
-format: html
-editor: visual
----
+
 
 ## Setup
 
