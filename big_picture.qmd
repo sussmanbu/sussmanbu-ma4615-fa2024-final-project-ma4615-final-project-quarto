@@ -3,12 +3,7 @@ title: "Big Picture"
 description: "A 538/Upshot style article about the data."
 toc: true
 draft: FALSE
-format:
-  html:
-    resources: 
-      - shinylive-sw.js
-filters:
-  - shinylive
+
 ---
 
 ![](images/The_Big_Picture_2.jpeg)
@@ -31,7 +26,8 @@ Your Big Data page should also include a small interactive dashboard. The dashbo
 
 
 
-```{shinylive-r}
+```{r}
+#| eval: false
 #| standalone: true
 #| viewerHeight: 640 # You will have to adjust this to fit everything
 
@@ -67,7 +63,9 @@ server <- function(input, output) {
   # The URL below has to point to a dataset on your github pages website
   # I recommend creating a small-ish rds file that has only the data relevant to 
   # the interactive.
-  data <- read_rds("https://sussmanbu.github.io/ma4615-final-project-quarto/dataset/loan_refusal_clean.rds")
+  #data <- read_rds("https://sussmanbu.github.io/ma4615-final-project-quarto/dataset/loan_refusal_clean.rds")
+  
+  data <- read_rds(here::here("dataset", "cleaned_dataset.rds"))
   
   output$distPlot <- renderPlot({
     ggplot(data, aes(x = refusal_rate)) +

@@ -1,0 +1,131 @@
+---
+title: "2017_Mileage data with Crash Reports "
+author: "Primah Muwanga"
+date: "2024-11-18"
+output: html_document
+execute:
+  enabled: false
+---
+```{r}
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(sf)
+library(leaflet)
+```
+
+```{r}
+# Assuming `crash_df` and PoPo are your data frames.
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+crash_df <- readRDS("dataset/cleaned_dataset.rds")
+PoPo <- readRDS("dataset/Police_Reports.rds")
+
+
+crash_df <- crash_df %>%
+  mutate(Crash_Date_Time = mdy_hms(Crash.Date.Time))
+
+PoPo <- PoPo %>%
+  mutate(
+    Start_Time = mdy_hms(Start.Time),
+    End_Time = mdy_hms(End.Time)
+  )
+```
+
+```{r}
+library(sf)
+
+# Convert crash_df to spatial object
+crash_sf <- crash_df %>%
+  filter(!is.na(Longitude) & !is.na(Latitude)) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+
+# Convert popo to spatial object
+PoPo_sf <- PoPo %>%
+  filter(!is.na(Longitude) & !is.na(Latitude)) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+
+```
+
+```{r}
+library(lubridate)
+
+# Define thresholds
+time_threshold <- hours(1)
+distance_threshold <- 500  # in meters
+
+```
+
+```{r}
+# Transform to a projected coordinate system for accurate distance measurement
+crash_sf_proj <- st_transform(crash_sf, crs = 3857)  # Web Mercator projection
+popo_sf_proj <- st_transform(PoPo_sf, crs = 3857)
+
+# Create buffers around crash points
+crash_buffers <- st_buffer(crash_sf_proj, dist = distance_threshold)
+
+```
+
+
+```{r}
+# Perform spatial join
+spatial_join <- st_join(
+  crash_buffers,
+  popo_sf_proj,
+  join = st_intersects,
+  left = FALSE
+)
+
+```
+
+```{r}
+# Calculate time difference
+joined_data <- spatial_join %>%
+  mutate(
+    Time_Diff = abs(difftime(Crash_Date_Time, Start_Time, units = "hours"))
+  ) %>%
+  filter(Time_Diff <= 1)
+
+```
+
+```{r}
+combined_data <- joined_data %>%
+  select(
+    Report.Number,
+    Crash_Date_Time,
+    Collision.Type,
+    Weather,
+    Surface.Condition,
+    Light,
+    Traffic.Control,
+    Driver.Substance.Abuse,
+    Injury.Severity,
+    Incident_ID,
+    Start_Time,
+    End_Time,
+    Priority,
+    Initial.Type,
+    Disposition.Desc
+  ) %>%
+  distinct()
+
+```
+
+```{r}
+ggplot(combined_data, aes(x = Weather, fill = Priority)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Weather Conditions by Police Priority",
+    x = "Weather Condition",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
