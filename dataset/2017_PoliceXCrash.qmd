@@ -62,31 +62,6 @@ distance_threshold <- 500  # in meters
 
 ```
 
-```{r}
-# Convert time columns to Date format
-crash_data$Crash.Date <- as.Date(crash_data$Crash.Date.Time)
-popo_data$Incident.Date <- as.Date(popo_data$Start.Time)
-
-# Aggregate counts by date
-crash_trend <- as.data.frame(table(crash_data$Crash.Date))
-colnames(crash_trend) <- c("Date", "Crash_Count")
-
-incident_trend <- as.data.frame(table(popo_data$Incident.Date))
-colnames(incident_trend) <- c("Date", "Incident_Count")
-
-# Merge trends
-trend_data <- merge(crash_trend, incident_trend, by = "Date", all = TRUE)
-trend_data[is.na(trend_data)] <- 0  # Replace NA with 0
-
-# Create the line chart
-ggplot(trend_data, aes(x = as.Date(Date))) +
-  geom_line(aes(y = Crash_Count, color = "Crashes"), size = 1) +
-  geom_line(aes(y = Incident_Count, color = "Incidents"), size = 1) +
-  labs(title = "Trend of Crashes and Incidents Over Time", x = "Date", y = "Count", color = "Type") +
-  theme_minimal()
-
-
-```
 
 ```{r}
 # Extract longitude and latitude from the Location column
