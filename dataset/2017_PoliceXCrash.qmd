@@ -20,32 +20,36 @@ library(ggplot2)
 library(dplyr)
 library(lubridate)
 
-crash_df <- readRDS("dataset/cleaned_dataset.rds")
-PoPo <- readRDS("dataset/Police_Reports.rds")
+crash_data <- readRDS("dataset/cleaned_dataset.rds")
+popo_data <- readRDS("dataset/Police_Reports.rds")
 
+col_crash <- colnames(crash_data)
+col_Popo <- colnames(popo_data)
 
-crash_df <- crash_df %>%
-  mutate(Crash_Date_Time = mdy_hms(Crash.Date.Time))
-
-PoPo <- PoPo %>%
-  mutate(
-    Start_Time = mdy_hms(Start.Time),
-    End_Time = mdy_hms(End.Time)
-  )
+print(col_crash)
+print(col_Popo)
 ```
 
 ```{r}
-library(sf)
+# Aggregate data
+crash_count <- as.data.frame(table(crash_data$Municipality))
+colnames(crash_count) <- c("City", "Crash_Count")
 
-# Convert crash_df to spatial object
-crash_sf <- crash_df %>%
-  filter(!is.na(Longitude) & !is.na(Latitude)) %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+incident_count <- as.data.frame(table(popo_data$City))
+colnames(incident_count) <- c("City", "Incident_Count")
 
-# Convert popo to spatial object
-PoPo_sf <- PoPo %>%
-  filter(!is.na(Longitude) & !is.na(Latitude)) %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+# Merge data by city
+merged_data <- merge(crash_count, incident_count, by = "City", all = TRUE)
+merged_data[is.na(merged_data)] <- 0  # Replace NA with 0
+
+# Create the bar chart
+library(ggplot2)
+ggplot(merged_data, aes(x = City)) +
+  geom_bar(aes(y = Crash_Count, fill = "Crashes"), stat = "identity", position = "dodge") +
+  geom_bar(aes(y = Incident_Count, fill = "Incidents"), stat = "identity", position = "dodge") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Incident and Crash Counts by City", x = "City", y = "Count", fill = "Type")
+
 
 ```
 
@@ -59,73 +63,65 @@ distance_threshold <- 500  # in meters
 ```
 
 ```{r}
-# Transform to a projected coordinate system for accurate distance measurement
-crash_sf_proj <- st_transform(crash_sf, crs = 3857)  # Web Mercator projection
-popo_sf_proj <- st_transform(PoPo_sf, crs = 3857)
+# Convert time columns to Date format
+crash_data$Crash.Date <- as.Date(crash_data$Crash.Date.Time)
+popo_data$Incident.Date <- as.Date(popo_data$Start.Time)
 
-# Create buffers around crash points
-crash_buffers <- st_buffer(crash_sf_proj, dist = distance_threshold)
+# Aggregate counts by date
+crash_trend <- as.data.frame(table(crash_data$Crash.Date))
+colnames(crash_trend) <- c("Date", "Crash_Count")
 
-```
+incident_trend <- as.data.frame(table(popo_data$Incident.Date))
+colnames(incident_trend) <- c("Date", "Incident_Count")
 
+# Merge trends
+trend_data <- merge(crash_trend, incident_trend, by = "Date", all = TRUE)
+trend_data[is.na(trend_data)] <- 0  # Replace NA with 0
 
-```{r}
-# Perform spatial join
-spatial_join <- st_join(
-  crash_buffers,
-  popo_sf_proj,
-  join = st_intersects,
-  left = FALSE
-)
+# Create the line chart
+ggplot(trend_data, aes(x = as.Date(Date))) +
+  geom_line(aes(y = Crash_Count, color = "Crashes"), size = 1) +
+  geom_line(aes(y = Incident_Count, color = "Incidents"), size = 1) +
+  labs(title = "Trend of Crashes and Incidents Over Time", x = "Date", y = "Count", color = "Type") +
+  theme_minimal()
 
-```
-
-```{r}
-# Calculate time difference
-joined_data <- spatial_join %>%
-  mutate(
-    Time_Diff = abs(difftime(Crash_Date_Time, Start_Time, units = "hours"))
-  ) %>%
-  filter(Time_Diff <= 1)
 
 ```
 
 ```{r}
-combined_data <- joined_data %>%
-  select(
-    Report.Number,
-    Crash_Date_Time,
-    Collision.Type,
-    Weather,
-    Surface.Condition,
-    Light,
-    Traffic.Control,
-    Driver.Substance.Abuse,
-    Injury.Severity,
-    Incident_ID,
-    Start_Time,
-    End_Time,
-    Priority,
-    Initial.Type,
-    Disposition.Desc
-  ) %>%
-  distinct()
+# Extract longitude and latitude from the Location column
+library(stringr)
+
+popo_data$Longitude <- as.numeric(str_extract(popo_data$Location, "-[0-9]+\\.[0-9]+"))
+popo_data$Latitude <- as.numeric(str_extract(popo_data$Location, "(?<= )[0-9]+\\.[0-9]+"))
+
+# Check the extracted columns
+head(popo_data)
+
 
 ```
 
 ```{r}
-ggplot(combined_data, aes(x = Weather, fill = Priority)) +
-  geom_bar(position = "dodge") +
-  labs(
-    title = "Weather Conditions by Police Priority",
-    x = "Weather Condition",
-    y = "Count"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# Create heatmap data
+library(ggplot2)
+library(ggmap)
+library(stringr)
+
+# Combine datasets for visualization
+crash_data$type <- "Crash"
+popo_data$type <- "Incident"
+
+# Select only necessary columns
+crash_locations <- crash_data[, c("Latitude", "Longitude", "type")]
+location_data <- rbind(crash_locations, popo_data[, c("Latitude", "Longitude", "type")])
+
+ggplot(location_data, aes(x = Longitude, y = Latitude)) +
+  stat_density2d(aes(fill = after_stat(level), alpha = ..level..), geom = "polygon") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  facet_wrap(~type) +
+  labs(title = "Heatmap of Crash and Incident Locations", x = "Longitude", y = "Latitude") +
+  theme_minimal()
 
 ```
-
-
 
 
