@@ -1,0 +1,10 @@
+---
+title: "Blog Post 7"
+subtitle: ""
+author: "Group 1"
+date: "2024-12-02"
+date-modified: "2024-12-02"
+draft: false
+---
+
+## 
