@@ -7,4 +7,80 @@ date-modified: "2024-11-18"
 draft: false
 ---
 
-## Placeholder for Blog Post 6
+## Pavement Condition Index (PCI)
+
+### Preliminary Analysis Based on the Hypothesis
+
+The Pavement Condition Index (PCI) is a numerical expression ranging from 0 to 100, representing the condition of pavement. Based on my own hypothesis, assuming "the higher the PCI, the lower the accident rate," I conducted a linear regression analysis using PCI (`avg_pci`) as the independent variable. The results show that the intercept (`Intercept`) is **11.09965**, indicating the predicted number of accidents when `avg_pci = 0`. The estimated coefficient for `avg_pci` is **-0.04909**, which suggests that for every one-unit increase in PCI, the number of accidents decreases by **0.049** on average. This coefficient is statistically significant (**p = 0.00337**).
+
+However, the adjusted R-squared value is only **0.004102**, indicating that PCI has very limited explanatory power for the number of accidents. The scatter plot shows that most data points are concentrated in the lower PCI range with considerable dispersion, and the linear regression line has a very slight negative slope. These observations suggest that PCI may have a minimal linear effect on accident rates.
+
+### Adjustments to the Hypothesis and Observations
+
+Further analysis revealed that areas with a higher number of accidents tend to fall within the middle PCI range (30-80). This may imply that busier roads often have higher PCI values, and these roads also experience more accidents. This observation challenges the initial hypothesis and suggests a more complex relationship between PCI and the number of accidents.
+
+![Relationship Between PCI and Accident Count](Relationship Between PCI and Accident Count.png)
+
+
+### Plan for Further Analysis
+
+To explore the impact of PCI on accident rates more comprehensively, I am implementing the following strategies:
+
+1. Incorporating Additional Variables: After cleaning and integrating the data, I am including additional potential influencing factors such as traffic volume, weather, and speed limits. By using multivariable regression analysis, I aim to quantify the combined effects of these variables on accident rates.
+2. Nonlinear Relationship Investigation: I will include quadratic or higher-order terms for PCI in the regression model to capture possible nonlinear patterns and improve the model's fit, further validating the hypothesis.
+3. Exploring Discrete Data Models: Given that accident rates are discrete count data, I may employ Poisson regression or negative binomial regression models for a more accurate representation of accident count distributions.
+
+### Current Progress
+
+Currently, I am focusing on the following tasks:
+
+- **Data Cleaning and Integration**:  
+    I have standardized field names for consistency, resolving many-to-many relationships between road names across datasets, ensuring alignment of fields between different datasets.
+    
+- **Exploratory Statistical Analysis**:  
+    I am grouping the data by key fields to calculate averages and accident counts, providing a foundation for subsequent modeling.
+    
+- **Regression Modeling**:  
+    I am gradually incorporating additional variables, such as weather and speed limits, to analyze their significant impacts on accident rates beyond PCI.
+    
+- **Visualization of Relationships**:  
+    I am creating scatter plots with trend lines to visually represent the relationships between variables, aiding in the interpretation and validation of analysis results.
+
+---
+
+## Crime Rate Analysis
+
+### Hypothesis Test
+
+- H_0: There is no relationship between between daily crime count and daily crash reporting. 
+- H_a: Days with higher crime counts mean higher crash reporting.
+
+### Setting up Data for Analysis
+
+In order to do this I filtered the original crime data from DATA.GOV to show crime reporting for only Montgomery Village within Montgomery County. I then chose to focus on the crime’s start time in order to analyze these crime counts as they began. Next, I adjusted the start date column into a proper date-time format in order to pull the date and mutate a column onto the filtered crime data set. Once doing this I was then able to create a new data frame that counted crimes that occurred on a specific day. I then joined these two frames into a data set that showed all days that had been reported whether crime or crash, and counted each.
+
+### Analyzing a Possible Relationship
+
+To see if there is anything to this hypothesis or if we don’t have a strong enough claim I used a couple of different plots. First I began with a scatterplot that included the line of best fit with method “lm.” This is shown below and represents the general relationship between the two variables.
+
+![Relationship Between Daily Crime and Crash Counts](Relationship Between Daily Crime and Crash Counts.png)
+
+We can see that the line is nearly horizontal, but there is a slight increase, meaning a possible positive correlation between our variables. Given that we can find the correlation to be about 0.0326, we can see there’s nearly no significant linear relationship between our variables.
+
+Next, before we know what test to run for our hypothesis I wanted to check for homoscedasticity and normality. This required me to look at the NQ-Q and Residual Plots. The NQ-Q plot helped to show the quantiles graphed against the standardized quantiles, which helps to show a bit of skewness at the tails of our distribution. Additionally, looking at our Residual plot shows there to be a few outliers, but generally, we can summarize as the fitted values increase our variance decreases. Overall both of these plots are interesting but not necessarily valuable because we can't see any huge significance in either. Additionally, I wouldn’t assume normality or homoscedasticity which eliminates many testing options. The best case would be to use a Monte Carlo simulation for further exploration.
+
+![Q-Q Residuals and Residuals vs Fitted](Q-Q Residuals Residuals vs Fitted.png)
+
+Lastly, we can look at a density graph that shows the different distributions of crashes on “High” versus “Low” crime count days. These thresholds are defined by whether the crime count for one day is above or below the median of total crime counts.
+
+![Density Plot of Crash Counts by Crime Level](Density Plot of Crash Counts by Crime Level.png)
+
+There seems to be a significant overlap between the distributions which means the range for crash reports is about the same given higher or lower crime counts. However, there is a slight shift to the right for the “High” distribution which agrees with our previous scatterplot. 
+
+### Plan for further analysis
+
+Given that these variables don’t appear to be largely related; I would look to another data set that could provide further enhancement to our crash reporting or I could focus on this case where we maybe don't see a strong relationship between crime in this county and vehicle crashes. This could be interesting to further analyze and one may assume they would have a significant relationship.
+
+If I were to continue with this analysis, I would first figure out what test I think would be the best to run and see if there’s any significance between our variables or if we fail to reject our null.
+
+

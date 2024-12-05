@@ -9,4 +9,4 @@ draft: false
  
 In our recent data cleaning work, we started by removing columns that had a high percentage of missing values, specifically those with over 80% missing data, to ensure the reliability of our analysis. We then transformed the format of columns "Local Case Number" to a character format to preserve specific formatting details, and the "Crash Date and Time" to a datetime format for better temporal analysis.
 
-Additionally, we addressed missing entries in the "Route Type" column by filling them with the most frequently occurring value, ensuring consistency in our categorical data. We also removed all duplicate entries to maintain the uniqueness of the dataset.
+Additionally, we addressed missing entries in the "Route Type" column by filling them with the most frequently occurring value, ensuring consistency in our categorical data. We also removed all duplicate entries to maintain the uniqueness of the dataset. 
