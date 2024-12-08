@@ -1,7 +1,10 @@
 ---
-title: "EDA"
-format: html
-editor: visual
+title: "Blog Post 4 - EDA and Modeling Section 2"
+subtitle: ""
+author: "Group 1"
+date: "2024-11-06"
+date-modified: "2024-11-06"
+draft: false
 execute:
   enabled: false
 ---
@@ -18,7 +21,7 @@ library(viridis)
 library(scales)
 library(RColorBrewer) 
 
-crash_data <- readRDS("/Users/xfu/bu-courses-repo/cas-ma-415/ma-4615-project/posts/2024-11-06-blog-post/cleaned_dataset.rds")
+crash_data <- readRDS("dataset/cleaned_dataset.rds")
 
 glimpse(crash_data)
 

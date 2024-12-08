@@ -13,50 +13,45 @@ about:
     - icon: github
       text: Github
       href: https://github.com/sussmanbu/
-      
-      
-
 ---
-This comes from the file `about.qmd`.
 
+<<<<<<< HEAD
 This is a website for the final project for MA[46]15 Data Science with R by Crash Dummies 🚗✨.
 The members of this team are below.
+=======
+This is a website for the final project for MA[46]15 Data Science with R by Team [TEAMNAME].
+>>>>>>> 597fbe1a78596ea16744d00510dc350d45baf9e2
 
-## Yifei Zhang
-Major: Economics & Math
+## Our Team
 
-From: China
+### Yifei Zhang
 
-## Primah Muwanga 
-Major: Data Science 
+**Major**: Economics & Mathematics
+**Home**: China
 
-Minor: Engineering Science
+### Primah Muwanga
 
-From: Uganda
+**Major**: Data Science
+**Minor**: Engineering Science
+**Home**: Uganda
 
+### Xiang Fu
 
-## Xiang Fu
-Major: Data Science
+**Major**: Data Science
+**Minor**: Statistics
+**Home**: China
 
-Minor: Statistics 
+### Nora O'Neill
 
-From: China 
+**Major**: Mathematics (Statistics Concentration)
+**Minor**: Business
+**Home**: Newton, Massachusetts
 
-## Nora O'Neill
-Major: Math(Concentration in Statistics)
+### Tejas Kaur
 
-Minor: Business
-
-From:   Newton, Massachusetts
-
-
-## Tejas Kaur
-Major: Economics and Math
-
-Minor: Data Science 
-
-From: Jaipur, India 
-
+**Major**: Economics and Mathematics
+**Minor**: Data Science
+**Home**: Jaipur, India
 
 <!-- Please leave in the information below -->
 
