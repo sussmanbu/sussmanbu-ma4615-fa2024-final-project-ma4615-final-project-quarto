@@ -5,7 +5,50 @@ toc: true
 draft: false
 ---
 
-![](images/data-import-cheatsheet-thumbs.png)
+## Primary Data Source
+
+The primary dataset used in this analysis comes from Montgomery County, Maryland's open data portal, specifically the "Crash Reporting - Drivers Data" dataset. This dataset is publicly available and can be accessed at [Montgomery County's Data Portal](https://data.montgomerycountymd.gov/Public-Safety/Crash-Reporting-Drivers-Data/mmzv-x632). The data is collected through the Automated Crash Reporting System (ACRS) of the Maryland State Police and includes reports from multiple law enforcement agencies: Montgomery County Police, Gaithersburg Police, Rockville Police, and the Maryland-National Capital Park Police.
+
+The dataset was created and is maintained as part of Montgomery County's commitment to public safety and transparency, particularly in support of their Vision Zero initiative (as indicated by the dataset's keywords). Vision Zero is a strategy to eliminate all traffic fatalities and severe injuries while increasing safe, healthy, equitable mobility for all. The data collection serves multiple purposes:
+- To track and analyze traffic collision patterns across the county
+- To inform policy decisions regarding traffic safety measures
+- To provide transparency about traffic incidents to the public
+- To support the coordination between different law enforcement agencies in the county
+
+The dataset is updated weekly and contains detailed information about traffic collisions occurring on county and local roadways. Each record represents a driver involved in a collision, with 39 variables capturing various aspects of the incident, including:
+
+Key Variables:
+- Temporal and Spatial Information: Crash Date/Time, Location (Latitude/Longitude), Road Name
+- Environmental Conditions: Weather, Surface Condition, Light, Traffic Control
+- Driver Details: Driver At Fault, Injury Severity, Driver Substance Abuse, Driver Distracted By
+- Vehicle Information: Vehicle Make, Model, Year, Body Type, Damage Extent
+
+## Data Description and Variables
+
+## Data Cleaning and Processing
+
+### Data Loading
+
+
+
+### Variable Cleaning
+
+
+
+### Additional Packages
+
+
+
+### Data Integration
+
+
+
+
+
+
+
+
+------
 
 
 This comes from the file `data.qmd`.
@@ -82,3 +125,6 @@ You will
 * Organization, clarity, cleanliness of the page
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
   * This page should be self-contained.
+  
+  
+  
