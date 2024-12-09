@@ -6,7 +6,7 @@ draft: FALSE
 
 ---
 
-![](images/The_Big_Picture_2.jpeg)
+![](images/East-Coast-Highway-2-today.webp)
 
 This comes from the file `big_picture.Rmd`.
 

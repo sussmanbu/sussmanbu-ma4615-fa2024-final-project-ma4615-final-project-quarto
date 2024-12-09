@@ -15,12 +15,11 @@ about:
       href: https://github.com/sussmanbu/
 ---
 
-<<<<<<< HEAD
-This is a website for the final project for MA[46]15 Data Science with R by Crash Dummies 🚗✨.
+This is a website for the final project for MA[46]15 Data Science with R by cRaSh oUt
+![](images/crashout.png)
 The members of this team are below.
 =======
-This is a website for the final project for MA[46]15 Data Science with R by Team [TEAMNAME].
->>>>>>> 597fbe1a78596ea16744d00510dc350d45baf9e2
+
 
 ## Our Team
 
