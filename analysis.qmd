@@ -89,6 +89,8 @@ In this data analysis, our goal is to explore the impact of PCI (Pavement Condit
 Context and Illustrations for the Analysis
 
 After data cleaning and merging, we conducted an initial exploration of the variables and plotted a scatterplot with a trend line to examine the relationship between PCI and accident count. Here is the visualization:
+![](~/ma-4615-fa24-final-project-group-1/scripts/plot intial.png)
+
 
 
 The plot reveals a slight negative correlation between PCI and accident count, but the overall impact appears weak. The trend line is relatively flat, and the data points are highly scattered. This result suggests that PCI alone has limited explanatory power for accident count, indicating that other factors may have a greater influence, which will be a key consideration in the model-building process.
@@ -115,16 +117,21 @@ In the linear regression analysis, We found that the linear relationship between
 Modeling Results
 
 The results of the univariate linear regression indicate a weak negative correlation between PCI (Pavement Condition Index) and accident count, with a slope of -0.037, which is statistically significant (p-value < 0.001). However, the model's explanatory power is extremely low, with an R² of only 0.0043, meaning PCI accounts for just 0.43% of the variation in accident count. Additionally, the residual standard error is high (8.019), reflecting a substantial prediction error. While the overall model is statistically significant (F-statistic p-value < 0.001), its practical impact is minimal, suggesting the need for additional variables or nonlinear methods to improve explanatory power.
-Here is the visualization:
+
 
 After applying a logarithmic transformation to accident counts, the impact of outliers was reduced, but the relationship between PCI and the log-transformed accident count remained very weak. Scatterplots and linear regression trend lines showed almost no noticeable linear association, with the trend line being nearly flat, indicating that PCI has a limited influence on accident count.
 Here is the visualization:
+![](~/ma-4615-fa24-final-project-group-1/scripts/plot log2.png)
 
 The multivariate regression results revealed a significant negative correlation between PCI and accident count (coefficient: -0.0355), suggesting that better pavement conditions are associated with slightly fewer accidents. Weather and surface conditions also had significant effects on accident count. For instance, wet surfaces significantly increased accident counts, while rainy weather was associated with fewer accidents, potentially because drivers exercised more caution. Despite the statistical significance of these variables, the model's goodness of fit remained low, with an adjusted R² of only 4.2%, indicating that accident count is likely influenced by many other unaccounted factors.
 Here is the visualization:
+![](~/ma-4615-fa24-final-project-group-1/scripts/plot muti.png)
+
 
 The nonlinear regression results indicate that by including the quadratic polynomial term for PCI (poly(PCI, 2)), the nonlinear relationship between PCI and accident count was captured. The negative coefficient of the first-order term (-52.66172) and the positive coefficient of the second-order term (34.10442) suggest that the effect of PCI on accident count exhibits a U-shaped or inverted U-shaped trend, where accident count initially increases slightly with PCI and then decreases. Additionally, the significance and directionality of weather and surface conditions remain consistent; for example, rainy weather (WeatherRAINING) significantly reduces accident counts, while wet surfaces (Surface.ConditionWATER) significantly increase them.
 Here is the visualization:
+![](~/ma-4615-fa24-final-project-group-1/scripts/plot noelinear.png)
+
 
 Although the model's goodness of fit improved slightly (adjusted R² = 4.4%), and the residual standard error (7.857) showed minor improvement, these findings suggest that while the model captures some complexity, accident count is still heavily influenced by other unmodeled factors.
 
