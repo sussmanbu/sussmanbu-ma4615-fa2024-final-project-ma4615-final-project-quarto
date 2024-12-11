@@ -5,11 +5,14 @@ toc: true
 draft: false
 ---
 
-## Primary Data Source
+# Primary Data Source
 
 The primary dataset used in this analysis comes from Montgomery County, Maryland's open data portal, specifically the "Crash Reporting - Drivers Data" dataset. This dataset is publicly available and can be accessed at [Montgomery County's Data Portal](https://data.montgomerycountymd.gov/Public-Safety/Crash-Reporting-Drivers-Data/mmzv-x632). The data is collected through the Automated Crash Reporting System (ACRS) of the Maryland State Police and includes reports from multiple law enforcement agencies: Montgomery County Police, Gaithersburg Police, Rockville Police, and the Maryland-National Capital Park Police.
 
-The dataset was created and is maintained as part of Montgomery County's commitment to public safety and transparency, particularly in support of their Vision Zero initiative (as indicated by the dataset's keywords). Vision Zero is a strategy to eliminate all traffic fatalities and severe injuries while increasing safe, healthy, equitable mobility for all. The data collection serves multiple purposes:
+The dataset was created and is maintained as part of Montgomery County's commitment to public safety and transparency, particularly in support of their Vision Zero initiative (as indicated by the dataset's keywords). Vision Zero is a strategy to eliminate all traffic fatalities and severe injuries while increasing safe, healthy, equitable mobility for all.
+
+The data collection serves multiple purposes:
+
 - To track and analyze traffic collision patterns across the county
 - To inform policy decisions regarding traffic safety measures
 - To provide transparency about traffic incidents to the public
@@ -17,43 +20,98 @@ The dataset was created and is maintained as part of Montgomery County's commitm
 
 The dataset is updated weekly and contains detailed information about traffic collisions occurring on county and local roadways. Each record represents a driver involved in a collision, with 39 variables capturing various aspects of the incident, including:
 
-Key Variables:
+### Key Variables
+
 - Temporal and Spatial Information: Crash Date/Time, Location (Latitude/Longitude), Road Name
 - Environmental Conditions: Weather, Surface Condition, Light, Traffic Control
 - Driver Details: Driver At Fault, Injury Severity, Driver Substance Abuse, Driver Distracted By
 - Vehicle Information: Vehicle Make, Model, Year, Body Type, Damage Extent
 
-## Data Description and Variables
+# Additional Data Sources
 
-## Data Cleaning and Processing
+## Pavement Condition Index
 
-### Data Loading
+The dataset, titled **Pavement Condition Index**, is provided by the **Department of Transportation of Montgomery County, Maryland**, and can be accessed through the Montgomery County open data portal at [data.montgomerycountymd.gov](https://data.montgomerycountymd.gov). This dataset was created to analyze and report on the conditions of pavements across the county's roadways. 
+
+- **Purpose of Collection**
+  - To evaluate and monitor the pavement condition of all 5,200 lane miles of roadways in Montgomery County.
+  - Support county transportation planning and maintenance activities by providing numerical condition scores.
+
+- **Attribution**
+  - Collected and curated by the Montgomery County Department of Transportation.
+  - Maintained and updated biennially with metadata recently updated on **June 11, 2023**.
+
+### Data Files and Variables
+
+The dataset includes the following variables, which provide details about pavement conditions. The most relevant variables are highlighted below:
+
+#### Key Variables
+- **Pavement Condition Index (PCI)**:
+  - A numerical score between 1 and 100, representing the condition of the pavement.
+  - **Score Categories**:
+    - **0-30**: Poor condition.
+    - **31-60**: Fair condition.
+    - **61-80**: Good condition.
+    - **81-100**: Very good condition.
+  
+- **Pavement Distress Types**:
+  - Includes 19 types of distresses, such as cracking, potholes, environmental impacts, and utility cuts.
+  
+#### Additional Variables (Summarized):
+- **Roadway ID**: Unique identifier for each roadway segment.
+- **Street Name**: Name of the street being evaluated.
+- **Segment Length**: Length of the road segment in miles.
+- **Last Inspected Date**: Date of the most recent condition assessment.
+- **Road Category**: Classifies roads (e.g., arterial, residential).
+
+### Access and Use Information
+
+- The dataset is publicly available and intended for use by the general public, researchers, and policymakers.
+- It is categorized as **Non-Federal**, with no specific license provided.
+
+### Additional Notes
+- **Update Frequency**: The dataset is updated every two years to reflect changes in pavement conditions.
+- **Limitations**: The dataset does not include real-time updates or historical comparisons across multiple update cycles.
+
+# Data Cleaning Process
+
+Our data cleaning process is implemented in our [load_and_clean_data.R](/scripts/load_and_clean_data.R) script. Here's how to use it and what it does:
+
+### Setup and Requirements
+
+First, ensure you have all required packages installed:
+
+```r
+install.packages(c("tidyverse", "lubridate", "skimr", "here"))
+```
+
+### Running the Cleaning Script
+
+The script can be run in two ways:
+
+```{r, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
+# Option 1: Source directly in your Quarto document
+source(here::here("scripts", "load_and_clean_data.R"), echo = TRUE)
+
+# Option 2: Load the already cleaned data
+clean_data <- readRDS(here::here("dataset", "cleaned_dataset_full.rds"))
+
+# Or load the exploration subset
+subset_data <- readRDS(here::here("dataset", "cleaned_dataset.rds"))
+```
+
+### Cleaning Operations
+
+Our cleaning script performs the following operations:
+
+1. Removes columns with more than 80% missing values
+2. Converts the case number to proper character format
+3. Standardizes date/time formats using lubridate
+4. Handles missing values in the Route Type column
+5. Removes duplicate entries
 
 
 
-### Variable Cleaning
-
-
-
-### Additional Packages
-
-
-
-### Data Integration
-
-
-
-
-
-
-
-
-------
-
-
-This comes from the file `data.qmd`.
-
-Your first steps in this project will be to find data to work on.
 
 
 Initially, you will study _one dataset_ but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable.
@@ -93,6 +151,7 @@ source(
   echo = TRUE # Use echo=FALSE or omit it to avoid code output  
 )
 ```
+
 You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
 
 You might consider using the `here` function from the [`here` package](https://here.r-lib.org/articles/here.html) to avoid path problems.
@@ -126,5 +185,4 @@ You will
   * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
   * This page should be self-contained.
   
-  
-  
+
