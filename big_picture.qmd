@@ -25,62 +25,138 @@ Your Big Data page should also include a small interactive dashboard. The dashbo
 
 
 
-
 ```{r}
-#| eval: false
-#| standalone: true
-#| viewerHeight: 640 # You will have to adjust this to fit everything
+##| eval: false
+##| standalone: true
+#| echo: FALSE
+##| viewerHeight: 640 # You will have to adjust this to fit everything
 
 
-library(shiny)
-library(tidyverse)
-options("readr.edition" = 1) # keep this to ensure you can download the data
+#library(shiny)
+#library(tidyverse)
+#options("readr.edition" = 1) # keep this to ensure you can download the data
 
 
 # Define UI for app that draws a histogram ----
-ui <- fluidPage(
+#ui <- fluidPage(
 
   # App title ----
-  titlePanel("Hello Shiny!"),
+  #titlePanel("Interactive Visualization with Shiny!"),
 
   # Sidebar layout with input and output definitions ----
-  verticalLayout(
+  #verticalLayout(
       # Input: Slider for the number of bins ----
-      sliderInput(inputId = "bins",
-                  label = "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30),
+      #sliderInput(inputId = "bins",
+                  #label = "Number of bins:",
+                  #min = 1,
+                  #max = 50,
+                  #value = 30),
 
       # Output: Histogram ----
-      plotOutput(outputId = "distPlot")
+     # plotOutput(outputId = "distPlot")
 
-  )
-)
+ # )
+#)
 
 # Define server logic required to draw a histogram ----
-server <- function(input, output) {
+#server <- function(input, output) {
   # The URL below has to point to a dataset on your github pages website
   # I recommend creating a small-ish rds file that has only the data relevant to 
   # the interactive.
   #data <- read_rds("https://sussmanbu.github.io/ma4615-final-project-quarto/dataset/loan_refusal_clean.rds")
   
-  data <- read_rds(here::here("dataset", "cleaned_dataset.rds"))
+  #data <- read_rds(here::here("dataset", "cleaned_dataset.rds"))
   
-  output$distPlot <- renderPlot({
-    ggplot(data, aes(x = refusal_rate)) +
-      geom_histogram(bins = input$bins + 1)
+ # output$distPlot <- renderPlot({
+    #ggplot(data, aes(x = refusal_rate)) +
+     # geom_histogram(bins = input$bins + 1)
 
-  })
+ # })
 
-}
+#}
 
 # Create Shiny app ----
-shinyApp(ui = ui, server = server)
+#shinyApp(ui = ui, server = server)
 ```
 
 ---
+```{r}
+library(shiny)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+#| eval: false
+#| standalone: true
+#| echo: FALSE
+#| viewerHeight: 640 # You will have to adjust this to fit everything
 
+
+options("readr.edition" = 1) # keep this to ensure you can download the data
+
+# Define UI
+ui <- fluidPage(
+  titlePanel("Interactive Visualization with Shiny"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        inputId = "column",
+        label = "Select a column to visualize:",
+        choices = c("Speed.Limit", "Surface.Condition", "Injury.Severity"),
+        selected = "Speed.Limit"
+      ),
+      conditionalPanel(
+        condition = "input.column == 'Speed.Limit'",
+        sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
+      )
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  data <- reactive({
+    # Replace this with your dataset loading logic
+    read_rds(here::here("dataset", "cleaned_dataset.rds")) %>%
+      mutate(
+        # Standardize Injury.Severity categories
+        Injury.Severity = case_when(
+          grepl("fatal", Injury.Severity, ignore.case = TRUE) ~ "Fatal Injury",
+          grepl("serious", Injury.Severity, ignore.case = TRUE) ~ "Serious Injury",
+          TRUE ~ Injury.Severity
+        )
+      )
+  })
+  
+  output$plot <- renderPlot({
+    column_data <- data()[[input$column]]
+    
+    if (is.numeric(column_data)) {
+      # Numeric column: render a histogram
+      ggplot(data(), aes_string(x = input$column)) +
+        geom_histogram(bins = input$bins, fill = "red", color = "white") +
+        theme_minimal() +
+        labs(title = paste("Distribution of", input$column))
+    } else {
+      # Categorical column: render a bar chart with improved x-axis
+      ggplot(data(), aes_string(x = input$column)) +
+        geom_bar(fill = "red", color = "white") +
+        theme_minimal() +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
+        ) +
+        labs(title = paste("Counts of", input$column))
+    }
+  })
+}
+
+# Run the app
+shinyApp(ui = ui, server = server)
+
+```
 ## Rubric: On this page
 
 You will

@@ -15,7 +15,7 @@ about:
       href: https://github.com/sussmanbu/
 ---
 
-This is a website for the final project for MA[46]15 Data Science with R by cRaSh oUt
+This is a website for the final project for MA[46]15 Data Science with R by CRASH OUT
 ![](images/crashout.png)
 The members of this team are below.
 =======
