@@ -15,7 +15,7 @@ To find out, we dug into the data to see how road quality, weather, and surface 
 
 Roads are rated by the Pavement Condition Index (PCI), which measures their quality on a scale from terrible to perfect. If bad roads mean more accidents, we should see a clear relationship between PCI and accident counts.
 
-Instead? The connection is weak. A scatterplot with a trend line shows that while better roads slightly reduce accidents, the trend is subtle.
+Instead? The connection is weak. A scatter plot with a trend line shows that while better roads slightly reduce accidents, the trend is subtle.
 
 What does this mean? Road conditions alone don’t explain much. Other factors—like weather and what’s on the road surface—may matter even more.
 
