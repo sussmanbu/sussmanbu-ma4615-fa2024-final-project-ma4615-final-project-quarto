@@ -82,18 +82,66 @@ The nonlinear regression results indicate that by including the quadratic polyno
 
 ![](scripts/plot noelinear.png)
 
-
 Although the model's goodness of fit improved slightly (adjusted R² = 4.4%), and the residual standard error (7.857) showed minor improvement, these findings suggest that while the model captures some complexity, accident count is still heavily influenced by other unmodeled factors.
 
 However, it is important to note some uncertainty in our estimates and conclusions. On one hand, while the coefficients are statistically significant, the model's fit remains low, indicating that these variables explain only a small portion of the variation in accident count. On the other hand, the scattered data distribution may make the results particularly sensitive to extreme values or low-frequency categories, which can affect the magnitude and direction of coefficients. Furthermore, the nonlinear relationship between PCI and accident count, such as the U-shaped or inverted U-shaped trend, might depend on sample characteristics and data distribution, requiring further validation and analysis to draw more reliable conclusions.
 
-## Additional Insights from Highway Mileage Data
+## Additional Insights from Highway Mileage Data and Crime Data
+
+### Highway Mileage Data
 
 To further contextualize these results, we examined crash distribution data from a highway mileage dataset. This supplementary visualization shows the total number of crashes across various route types and under different surface conditions:
 
 ![](images/Crash-Distribution-by-Route-Type-and-Surface-Condition.png)
 
-In these stacked bars, DRY conditions dominate most crashes, regardless of route type or year. While one might expect poor pavement or inclement conditions to drive up accidents substantially, the figure reveals that even under primarily dry conditions, crashes are frequent. Interstates and state highways often show higher totals, likely reflecting greater traffic volume and speed. This suggests that while pavement condition and certain environmental factors influence accidents, the broader context—such as traffic exposure (vehicle miles traveled), route type, and usage patterns—can overshadow more subtle effects of PCI alone.
+Each panel contains a set of bars, each bar corresponding to a specific route type. Common route types include County roads, Interstates, State roads (such as Maryland state highways), Municipal roads, Other Public Roadways, and Ramps. The height of each bar indicates the total number of crashes recorded in that year for the given route type. Within each bar, different colors represent distinct surface conditions at the time of the crash: DRY, ICE, N/A (not applicable), UNKNOWN, and WET.
+
+At a glance, DRY conditions (red segments) dominate most of the bars in all years. This suggests that the majority of crashes occur on dry roads, regardless of route type or year. Other surface conditions, such as ICE (green) and WET (purple), appear less frequently, indicating that while inclement weather does contribute to some crashes, it is not as common as crashes on clear, dry pavement. The N/A and UNKNOWN categories (brown and blue segments) vary in proportion from year to year and route to route, indicating occasional gaps or uncertainties in data recording.
+
+Across the years, Interstates and State highways often show some of the higher totals of crashes, perhaps due to greater traffic volume and speed. County and Municipal roads also see their share of crashes, though the counts can fluctuate from year to year. Ramps and Other Public Roadways tend to have fewer crashes in most observed years, reflected by relatively smaller bars. Throughout the six-year span, the general pattern remains consistent: higher crash frequencies on dry surfaces and on busier route types, with smaller contributions from icy or wet conditions and some periodic variability in less traveled road types.
+
+### Crime Data
+
+**Objective**
+
+After exploring the pavement conditions' impact on accident reporting, we analyzed an additional government data set on crime reporting in Montgomery County. We started off we a simple statistical thesis to guide our exploration: 
+
+- Null hypothesis: There is no relationship between daily crime count and daily crash reporting.
+- Alternative hypothesis: There is a relationship between daily crime count and daily crash reporting. 
+
+**Preliminary Set-Up**
+
+To investigate our null hypothesis (and to decide whether we can reject or fail to) we set up both data sets for plotting. This included cleaning the Crime Reporting Data from DATA.GOV to filter out all other counties in Maryland that weren’t Montgomery. Then, to tallie the crime counts we based it on the crime’s start time (a column in the data set). To pull the start date and mutate a column onto the filtered crime data we adjusted the start date variable to be in the correct date-time format. Once we did this, we were able to create a new data frame that counted crimes that occurred on a specific day. Finally, we joined these two frames into a data set that showed all days that had been reported whether crime or crash, and counted each. 
+
+**Analyzing a possible relationship:**
+
+To see if there is anything to this hypothesis or if we don’t have a strong enough claim we used a couple of different plots. We focused on using a simple linear regression model and then using its NQQ and Residual plots to gather evidence for our hypothesis. After plotting we can see the line is nearly horizontal, but there is a slight increase, meaning a possible positive association between our variables. Given that we can calculate the correlation to be about 0.0326, we can see there’s nearly no significant linear relationship between our variables. To further explore the possible relationship between crime and crash data in Montgomery, we ran the NQQ and residual plots to explore the variance, normality, and independence of the data. 
+
+The NQ-Q plot helped to show the quantiles graphed against the standardized quantiles, which helps to show a bit of skewness at the tails of our distribution. Additionally, looking at our Residual plot shows there to be a few outliers, but generally, we can summarize as the fitted values increase our variance decreases. Overall both of these plots are interesting but not necessarily valuable because we can't see any huge significance in either. Additionally, we wouldn’t assume normality or homoscedasticity which eliminates parametric testing options. 
+
+But before we explore possible solutions to what seems to look like an insignificant relationship between crime counts and crash counts, we chose to look at a density plot to get a better visual understanding. 
+
+Density plot of crash counts by crime level:
+
+![Density Plot of Crash Counts by Crime Level](scripts/Density-Plot-of-Crash-Counts-by-Crime-Level.png)
+
+This density graph shows the different distributions of crashes on “High” versus “Low” crime count days. These thresholds are defined by whether the crime count for one day is above or below the median of total crime counts calculated. There seems to be a significant overlap between the distributions which means the range for crash reports is about the same given higher or lower crime counts. However, there is a slight shift to the right for the “High” distribution which agrees with our previous scatterplot.
+
+**Hypothesis Conclusion**
+
+Given the somewhat okay fit from our linear regression model, using the statistics we can obtain the beta coefficient and whether it seems significant.
+
+- Beta is 0.2129, which suggests for each additional crime tallied, we get a slight increase in crashes
+- Our pvalue is 0.0506 with a confidence of 0.95, it seems to be too close to the threshold to be significant
+- R^2 shows only 0.1% of the variation in the daily crash count is explained by the daily crime count
+- Our residual standard error of 17.56 indicates that a lot of the variability found in this relationship cannot be explained 
+- Lastly with a F_stat (assuming our data is mostly normal)  of 3.823 and a critical value of 1.96
+
+Therefore our group concludes that for this exploration of data, we fail to reject the null. This isn’t great as there’s not much we can conclude from the data itself in relation to the crash reporting.
+
+**Discussion of Results**
+
+If we focused solely on the Crime dataset, we could explore a possible relationship between crime and accident count in greater detail. However, the statistical analysis suggests a very small association between the variables. From a non-statistical perspective, one might hypothesize that increased crime could include incidents such as DUIs or car crashes involving distracted drivers. To investigate this further, it might be more appropriate to model the data using a Poisson distribution or logistic regression, given the nature of the variables.
 
 ## Limitations
 
@@ -110,4 +158,3 @@ Future research could incorporate richer variables—such as detailed traffic vo
 This analysis suggests that while PCI shows a statistically significant relationship with accident counts, its effect is weak and overshadowed by other factors. Even when accounting for weather and surface conditions, and allowing for nonlinear patterns, the explanatory power remains modest. The supplementary highway mileage visualization reinforces the notion that fundamental aspects like traffic volume, route usage, and driver behavior likely play more critical roles.
 
 In summary, PCI is not a strong standalone predictor of accident frequency, and a more holistic, data-rich approach is needed to fully understand and mitigate traffic accidents.
-

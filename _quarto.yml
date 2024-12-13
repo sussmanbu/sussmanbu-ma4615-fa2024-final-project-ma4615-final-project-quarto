@@ -5,7 +5,7 @@ project:
   resources: scripts
 
 website:
-  title: "MA [46]15 Final Project - Group 1"
+  title: "Road Real Talk: Crashes, Conditions, and Rescue"
   navbar:
     right:
       - about.qmd
@@ -16,6 +16,3 @@ format:
   html:
     theme: cosmo
     css: styles.css
-
-
-
