@@ -5,7 +5,7 @@ toc: true
 draft: false
 ---
 
-![](https://upload.wikimedia.org/wikipedia/commons/7/77/Pebbleswithquarzite.jpg)
+![](images/snow_cars.png)
 
 This comes from the file `analysis.qmd`.
 

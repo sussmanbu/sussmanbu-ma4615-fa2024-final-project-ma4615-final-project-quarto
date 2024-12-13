@@ -6,131 +6,74 @@ draft: FALSE
 
 ---
 
-![](images/East-Coast-Highway-2-today.webp)
-
-This comes from the file `big_picture.Rmd`.
-
-Think of this page as your 538/Upshot style article. This means that you should try to tell a story through the data and your analysis. Read articles from those sites and similar sites to get a feeling for what they are like. Try to write in the style of a news or popular article. Importantly, this page should be geared towards the general public. You shouldn't assume the reader understands how to interpret a linear regression or a complicated plot. Focus on interpretation and visualizations.
-
-
-
----
+![](images/question_cars.png)
 Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
 
 To find out, we dug into the data to see how road quality, weather, and surface conditions shape the likelihood of accidents. What we found might surprise you. While pavement conditions do play a role, they’re far from the whole story.
 
-What We Found: Road Quality Isn’t Everything
-Roads are rated by something called the Pavement Condition Index (PCI), which measures their quality on a scale from terrible to perfect. If bad roads mean more accidents, we should see a clear relationship between PCI and accident counts.
+**Road Quality Isn’t Everything**
+Roads are rated by the Pavement Condition Index (PCI), which measures their quality on a scale from terrible to perfect. If bad roads mean more accidents, we should see a clear relationship between PCI and accident counts.
 
 Instead? The connection is weak. A scatterplot with a trend line shows that while better roads slightly reduce accidents, the trend is subtle.
 
 What does this mean? Road conditions alone don’t explain much. Other factors—like weather and what’s on the road surface—may matter even more.
 
-When Weather and Wet Roads Take the Wheel
-Here’s where it gets interesting:
+**When Weather and Wet Roads Take the Wheel**
 
-Wet surfaces (like roads after a storm) significantly increase accident counts.
-Rainy weather, on the other hand, seems to have the opposite effect—it actually reduces accidents.
-How does that make sense? It turns out drivers tend to slow down and be more careful when it’s raining, even though wet roads themselves are a major hazard.
+Here’s where it gets interesting, wet surfaces (like roads after a storm) significantly increase accident counts.Rainy weather, on the other hand, seems to have the opposite effect—it actually reduces accidents.How does that make sense? It turns out drivers tend to slow down and be more careful when it’s raining, even though wet roads themselves are a major hazard.
 
 A multivariate visualization brings this dynamic to life, showing how weather and surface conditions interact with PCI to impact accidents.
 
-It’s Not a Straight Line: Complex Patterns in the Data
+**It’s Not a Straight Line Complex Patterns in the Data**
+
 When we examined the relationship between PCI and accidents further, a surprising pattern emerged. Instead of a simple straight-line relationship, we found a U-shaped trend.
 
 This means accidents were more frequent at moderate PCI levels than at very high or very low PCI levels. Why? It’s hard to say for sure, but this might reflect how drivers behave or how other factors like traffic volume play a role.
 
-Our polynomial regression plot captures this complexity and adds a new layer to the story: road conditions affect accidents in more complicated ways than we expected.
+Our polynomial regression plot captures this complexity and adds a new layer to the story, road conditions affect accidents in more complicated ways than we expected.
 
-Get Behind the Wheel: Explore the Data Yourself
+**Get Behind the Wheel, Explore the Data Yourself**
+
 Want to see these patterns for yourself? We’ve built an interactive dashboard where you can dig into the data.
 
 Toggle between weather conditions to see how rain or wet roads impact accident trends.
 Compare the results of linear and nonlinear models to understand the bigger picture.
 It’s an easy way to explore what’s happening on our roads and what factors matter most.
 
-The Big Takeaways
-Better Roads Help—But Not Much: While smoother pavement is linked to slightly fewer accidents, the effect is small.
-Weather and Wet Roads Matter More: Wet roads increase accidents, while rainy weather may make drivers more cautious.
-Complex Relationships: The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role.
+**The Big Takeaways**
+Better Roads Help—But Not Much
+
+While smoother pavement is linked to slightly fewer accidents, the effect is small.
+Weather and Wet Roads Matter More
+Wet roads increase accidents, while rainy weather may make drivers more cautious.
+
+Complex Relationships
+
+The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role.
 What This Means for Safer Roads
-Our findings point to a broader truth: keeping roads safe takes more than just paving over potholes. It means targeting the biggest risks, like managing wet-road hazards and encouraging safer driving during bad weather.
+
+Our findings point to a broader truth
+
+keeping roads safe takes more than just paving over potholes. It means targeting the biggest risks, like managing wet-road hazards and encouraging safer driving during bad weather.
 
 By understanding these dynamics, we can make smarter decisions—whether that’s where to invest in road improvements or how to educate drivers about staying safe in tough conditions.
 
-So, the next time you drive on a cracked road or slow down in the rain, remember: every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
+So, the next time you drive on a cracked road or slow down in the rain, remember, every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
 
 ### Interactive
 
-You will also be required to make an interactive dashboard like [this one](/flex/flex.html).
-
-Your Big Data page should also include a small interactive dashboard. The dashboard should be created either using Shinylive, as below. This interactive component should in some way support your thesis from your big picture page. Good interactives often provide both high-level understanding of the data while allowing a user to investigate specific scenarios, observations, subgroups, etc.
-
-
-
-```{r}
-##| eval: false
-##| standalone: true
-#| echo: FALSE
-##| viewerHeight: 640 # You will have to adjust this to fit everything
-
-
-#library(shiny)
-#library(tidyverse)
-#options("readr.edition" = 1) # keep this to ensure you can download the data
-
-
-# Define UI for app that draws a histogram ----
-#ui <- fluidPage(
-
-  # App title ----
-  #titlePanel("Interactive Visualization with Shiny!"),
-
-  # Sidebar layout with input and output definitions ----
-  #verticalLayout(
-      # Input: Slider for the number of bins ----
-      #sliderInput(inputId = "bins",
-                  #label = "Number of bins:",
-                  #min = 1,
-                  #max = 50,
-                  #value = 30),
-
-      # Output: Histogram ----
-     # plotOutput(outputId = "distPlot")
-
- # )
-#)
-
-# Define server logic required to draw a histogram ----
-#server <- function(input, output) {
-  # The URL below has to point to a dataset on your github pages website
-  # I recommend creating a small-ish rds file that has only the data relevant to 
-  # the interactive.
-  #data <- read_rds("https://sussmanbu.github.io/ma4615-final-project-quarto/dataset/loan_refusal_clean.rds")
-  
-  #data <- read_rds(here::here("dataset", "cleaned_dataset.rds"))
-  
- # output$distPlot <- renderPlot({
-    #ggplot(data, aes(x = refusal_rate)) +
-     # geom_histogram(bins = input$bins + 1)
-
- # })
-
-#}
-
-# Create Shiny app ----
-#shinyApp(ui = ui, server = server)
-```
-
----
 ```{r}
 
-##| eval: false
+#| eval: false
 #| standalone: true
-#| echo: FALSE
+#| echo: false
 #| engine: shiny 
 #| viewerHeight: 650 # You will have to adjust this to fit everything
 
+if (!require("shiny")) {
+  install.packages("shiny")
+  library(shiny)
+}
 
 library(shiny)
 library(ggplot2)
