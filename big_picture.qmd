@@ -124,15 +124,20 @@ Your Big Data page should also include a small interactive dashboard. The dashbo
 
 ---
 ```{r}
+
+##| eval: false
+#| standalone: true
+#| echo: FALSE
+#| engine: shiny 
+#| viewerHeight: 650 # You will have to adjust this to fit everything
+
+
 library(shiny)
 library(ggplot2)
 library(dplyr)
 library(tidyverse)
-#| eval: false
-#| standalone: true
-#| echo: FALSE
-#| viewerHeight: 640 # You will have to adjust this to fit everything
 
+ 
 
 options("readr.edition" = 1) # keep this to ensure you can download the data
 
