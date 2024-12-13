@@ -1,13 +1,11 @@
 ---
-title: "Road Real Talk: Crashes, Conditions, and Rescue"
+title: "Story and Question"
 description: ""
 toc: true
 draft: FALSE
 engine: shiny 
 
 ---
-![](images/question_cars.png)
-
 
 Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
 
@@ -149,46 +147,3 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 
 ```
-## Rubric: On this page
-
-You will
-
-* Title
-  * Your big picture page should have a creative/click-bait-y title/headline that provides a hint about your thesis.
-* Clarity of Explanation
-  * You should have a clear thesis/goal for this page. What are you trying to show? Make sure that you explain your analysis in detail but don't go into top much mathematics or statistics. The audience for this page is the general public (to the extent possible). Your thesis should be a statement, not a question.
-  * Each figure should be very polished and also not too complicated. There should be a clear interpretation of the figure so the figure has a clear purpose. Even something like a histogram can be difficult to interpret for non-experts.
-* Creativity
-  * Do your best to make things interesting. Think of a story. Think of how each part of your analysis supports the previous part or provides a different perspective.
-* Interactive component
-  * Quality and ease of use of the interactive components.
-Is it clear what can be explored using your interactive components?
-Does it enhance and reinforce your conclusions?
-* This page should be self-contained.
-  
-**Note**: This page should have no code visible, i.e. use `#| echo: FALSE`.  
-
-
-
-
-## Rubric: Other components
-
-### Video Recording
-
-Make a video recording (probably using Zoom) demonstrating your interactive components.
-You should provide a quick explanation of your data and demonstrate some of the conclusions from your EDA.
-This video should be no longer than 4 minutes.
-Include a link to your video (and password if needed) in your README.md file on your Github repository. You are not required to provide a link on the website.
-This can be presented by any subset of the team members.
-
-
-### Rest of the Site
-
-Finally, here are important things to keep in mind for the rest of the site. 
-
-The main title of your page is informative.
-Each post has an author/description/informative title.
-All lab required posts are present.
-Each page (including the home page) has a nice featured image associated with it.
-Your about page is up to date and clean.
-You have removed the generic posts from the initial site template.

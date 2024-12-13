@@ -1,10 +1,12 @@
 ---
-title: Data
+title: Data Cleaning
 toc: true
 draft: false
 ---
 
-![](images/sweeping.png)
+
+=======
+![](images/data-cleaning-page.png)
 
 # Primary Data Source
 
