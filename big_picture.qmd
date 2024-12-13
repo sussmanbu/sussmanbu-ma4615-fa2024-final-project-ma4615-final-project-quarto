@@ -6,7 +6,7 @@ draft: FALSE
 
 ---
 
-![](images/East-Coast-Highway-2-today.webp)
+![](images/story-and-question-page.png)
 
 Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
 

@@ -4,6 +4,8 @@ toc: true
 draft: false
 ---
 
+![](images/analysis-page.png)
+
 ## Motivation for Data Analysis
 
 Traffic accidents arise from a complex interplay of factors, including infrastructure quality, environmental conditions, and driver behavior. One of the key variables of interest is the Pavement Condition Index (PCI), which quantifies pavement quality. While one might suspect that deteriorating pavement conditions could contribute to higher accident counts, the strength and nature of this relationship remain unclear. In addition, other factors—such as weather and surface conditions—may interact with PCI in ways that either amplify or mitigate its influence on accidents.

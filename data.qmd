@@ -4,6 +4,8 @@ toc: true
 draft: false
 ---
 
+![](images/data-cleaning-page.png)
+
 # Primary Data Source
 
 The primary dataset used in this analysis comes from Montgomery County, Maryland's open data portal, specifically the "Crash Reporting - Drivers Data" dataset. This dataset is publicly available and can be accessed at [Montgomery County's Data Portal](https://data.montgomerycountymd.gov/Public-Safety/Crash-Reporting-Drivers-Data/mmzv-x632). The data is collected through the Automated Crash Reporting System (ACRS) of the Maryland State Police and includes reports from multiple law enforcement agencies: Montgomery County Police, Gaithersburg Police, Rockville Police, and the Maryland-National Capital Park Police.
