@@ -43,7 +43,7 @@ Link: [Maryland Traffic Volume Maps](https://roads.maryland.gov/Traffic_Volume_M
 
 For this analysis, we incorporated Maryland's Traffic Volume Maps data, which provide Annual Average Daily Traffic (AADT) metrics across multiple roadways in Montgomery County and other regions. By integrating this dataset with our crash and road condition data, we aim to examine how traffic volume correlates with crash rates, particularly in areas with varying pavement conditions. This data enables a more nuanced analysis of risk factors, as higher traffic volumes may influence crash frequency and severity. A key challenge in this integration has been aligning traffic volume data with the specific crash locations due to slight mismatches in geographic identifiers between datasets. Our next steps will involve refining the matching process to ensure accurate associations, followed by statistical analyses to identify any significant relationships between traffic volume, road conditions, and crash incidences.
 
-## Crash Reporting for Montgomery County
+## Crime Reporting for Montgomery County
 
 Link: [Crime Dataset](https://catalog.data.gov/dataset/crime)
 

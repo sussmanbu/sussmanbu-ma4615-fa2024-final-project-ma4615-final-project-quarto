@@ -3,15 +3,18 @@ title: "Road Real Talk: Crashes, Conditions, and Rescue"
 description: ""
 toc: true
 draft: FALSE
+engine: shiny 
 
 ---
-
 ![](images/question_cars.png)
+
+
 Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
 
 To find out, we dug into the data to see how road quality, weather, and surface conditions shape the likelihood of accidents. What we found might surprise you. While pavement conditions do play a role, they’re far from the whole story.
 
 **Road Quality Isn’t Everything**
+
 Roads are rated by the Pavement Condition Index (PCI), which measures their quality on a scale from terrible to perfect. If bad roads mean more accidents, we should see a clear relationship between PCI and accident counts.
 
 Instead? The connection is weak. A scatterplot with a trend line shows that while better roads slightly reduce accidents, the trend is subtle.
@@ -40,11 +43,9 @@ Toggle between weather conditions to see how rain or wet roads impact accident t
 Compare the results of linear and nonlinear models to understand the bigger picture.
 It’s an easy way to explore what’s happening on our roads and what factors matter most.
 
-**The Big Takeaways**
-Better Roads Help—But Not Much
+**The Big Takeaways: Better Roads Help—But Not Much**
 
-While smoother pavement is linked to slightly fewer accidents, the effect is small.
-Weather and Wet Roads Matter More
+While smoother pavement is linked to slightly fewer accidents, the effect is small. Weather and Wet Roads Matter More
 Wet roads increase accidents, while rainy weather may make drivers more cautious.
 
 Complex Relationships
@@ -65,8 +66,8 @@ So, the next time you drive on a cracked road or slow down in the rain, remember
 ```{r}
 
 #| eval: false
-#| standalone: true
 #| echo: false
+#| standalone: true
 #| engine: shiny 
 #| viewerHeight: 650 # You will have to adjust this to fit everything
 
