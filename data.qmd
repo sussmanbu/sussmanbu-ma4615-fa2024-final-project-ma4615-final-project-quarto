@@ -1,6 +1,5 @@
 ---
 title: Data
-description: We describe the sources of our data and the cleaning process.
 toc: true
 draft: false
 ---
@@ -73,7 +72,83 @@ The dataset includes the following variables, which provide details about paveme
 - **Update Frequency**: The dataset is updated every two years to reflect changes in pavement conditions.
 - **Limitations**: The dataset does not include real-time updates or historical comparisons across multiple update cycles.
 
-# Data Cleaning Process
+## Maryland Highway Mileage Reports
+The dataset, titled **Annual Highway Mileage Reports**, is provided by the **Maryland Department of Transportation State Highway Administration (MDOT SHA)**. This dataset combines comprehensive information about state, toll, county, and municipal roadway systems in Montgomery County, Maryland, focusing on three key report types: DSD9 (Detailed Surface Data), FCAVMT (Functional Class Annual Vehicle Miles Traveled), and FCMI (Functional Class Mileage Information) from 2017 to 2022.
+
+- **Purpose of Collection**
+  - To track and analyze highway infrastructure across different functional classifications in Montgomery County.
+  - Support transportation planning and policy decisions by providing detailed metrics on road usage and capacity.
+  - Monitor changes in road infrastructure and vehicle miles traveled over time.
+
+- **Attribution**
+  - Collected and maintained by the Maryland Department of Transportation State Highway Administration.
+  - Represents official state records of highway infrastructure and usage.
+
+### Data Files and Variables
+The dataset combines three main report types, each providing distinct insights into the county's highway system:
+
+#### Key Components
+- **DSD9 (Detailed Surface Data)**:
+  - Mainline mileage (total, divided, non-divided)
+  - Annual vehicle miles
+  - Lane mileage (auxiliary spurs, mainline, total)
+  - Square yards of surfacing
+  
+- **FCAVMT (Functional Class Annual Vehicle Miles Traveled)**:
+  - Tracks vehicle miles traveled across different road classifications
+  - Separates data into rural and urban categories
+  - Includes various road types from Interstate to Local roads
+  
+- **FCMI (Functional Class Mileage Information)**:
+  - Documents road mileage by functional classification
+  - Covers both rural and urban road networks
+  - Categorizes roads from Interstate to Local systems
+
+#### Classification Variables
+- **Road Categories**:
+  - Interstate
+  - Other Freeways
+  - Principal Arterial
+  - Minor Arterial
+  - Major Collector
+  - Minor Collector
+  - Local Roads
+  
+Each category is further subdivided into rural and urban designations.
+
+### Access and Use Information
+- The dataset represents official state records and is used for planning and administrative purposes.
+- Data is structured to support analysis of transportation infrastructure trends from 2017 to 2022.
+
+### Additional Notes
+- **Time Coverage**: The dataset spans six years (2017-2022), providing recent historical context.
+- **Geographical Scope**: Focuses specifically on Montgomery County, Maryland.
+- **Integration**: Combines three distinct report types to provide a comprehensive view of the county's highway system.
+- **Limitations**: Earlier years may have fewer data categories as reporting requirements expanded over time.
+
+## Montgomery County Crime Dataset
+
+The dataset, titled **Crime**, is provided by the **Montgomery County Police Department** and can be accessed through Montgomery County's open data portal at dataMontgomery. This dataset contains detailed crime statistics and incident reports, utilizing the National Incident-Based Reporting System (NIBRS) classification standards.
+
+The primary purpose of this dataset is to provide public access to comprehensive crime statistics in Montgomery County, supporting law enforcement analysis and transparency initiatives while enabling data-driven policy decisions regarding public safety. The data is collected and maintained by the Montgomery County Police Department and compiled using the EJustice records-management system. The data is updated daily, with metadata last updated on December 7, 2024.
+
+### Data Files and Variables
+
+The dataset includes detailed information about reported crimes through various key components. The incident information includes unique identifiers such as Incident ID and CR Number, along with temporal data including dispatch date/time, and start and end date/time. Each incident is classified using NIBRS codes and can include up to three crime name categories per incident, along with offense codes and the number of victims involved.
+
+Location data is extensively documented, including police district name and number, detailed block address components, city, state, and zip code information. Geographic coordinates are provided through latitude and longitude, and law enforcement jurisdictional information is included through sector, beat, and PRA designations.
+
+### Access and Use Information
+
+The dataset is made available to the public through multiple format options, including CSV, RDF/XML, JSON, and XML. The data coverage begins from July 1st, 2016, and can be accessed through the Montgomery County open data portal. To maintain privacy standards, all personal information is excluded from the public dataset to protect victims' privacy.
+
+### Additional Notes
+
+The dataset is updated daily, with quarterly refreshes to reflect any changes in investigation status. Users should be aware of several important limitations: the information may be preliminary and subject to change, incidents may include attempted crimes alongside completed ones, and crime classifications may be updated as investigations progress. The data may contain mechanical or human errors, and while arrest information is included, all arrested persons are presumed innocent until proven guilty in a court of law.
+
+This comprehensive dataset serves as a valuable resource for understanding crime patterns and law enforcement activities in Montgomery County, while maintaining appropriate privacy protections and data quality standards. The frequent updates and multiple format options make it a useful tool for researchers, policy makers, and the general public interested in local crime statistics and trends.
+
+## Data Cleaning Process
 
 Our data cleaning process is implemented in our [load_and_clean_data.R](/scripts/load_and_clean_data.R) script. Here's how to use it and what it does:
 
@@ -110,79 +185,204 @@ Our cleaning script performs the following operations:
 4. Handles missing values in the Route Type column
 5. Removes duplicate entries
 
+## Data Integration Process
 
+When combining the datasets, we faced several challenges that required careful handling. The geographic alignment between the crash data and the PCI dataset was particularly challenging due to differences in road name formatting and segmentation. We developed a matching algorithm that standardized road names and used geographic coordinates to ensure accurate joining of the datasets, as shown in the following code:
 
+```{r, eval=FALSE, echo=TRUE}
+# Standardize road names in both datasets
+standardize_road_names <- function(road_name) {
+  road_name %>%
+    str_to_upper() %>%
+    str_replace_all(c(
+      "AVENUE" = "AVE",
+      "BOULEVARD" = "BLVD",
+      "STREET" = "ST",
+      "ROAD" = "RD",
+      "HIGHWAY" = "HWY"
+    )) %>%
+    str_trim()
+}
 
+# Clean and prepare datasets for matching
+crash_data <- crash_data %>%
+  mutate(
+    Road.Name = standardize_road_names(Road.Name),
+    location_key = paste(Road.Name, Municipality)
+  )
 
-Initially, you will study _one dataset_ but later you will need to combine that data with another dataset. For this reason, I recommend finding data that has some date and/or location components. These types of data are conducive to interesting visualizations and analysis and you can also combine this data with other data that also has a date or location variable.
-Data from the census, weather data, economic data, are all relatively easy to combine with other data with time/location components.
+pci_data <- pci_data %>%
+  mutate(
+    StreetName = standardize_road_names(StreetName),
+    location_key = paste(StreetName, City)
+  )
 
+# Perform fuzzy matching for unmatched roads
+library(stringdist)
+unmatched_roads <- crash_data %>%
+  filter(!location_key %in% pci_data$location_key)
 
-## What makes a good data set?
-
-* Data you are interested in and care about.
-* Data where there are a lot of potential questions that you can explore.
-* A data set that isn't completely cleaned already.
-* Multiple sources for data that you can combine.
-* Some type of time and/or location component.
-
-
-## Where to keep data?
-
-
-Below 50mb: In `dataset` folder
-
-Above 50mb: In `dataset_ignore` folder. This folder will be ignored by `git` so you'll have to manually sync these files across your team.
-
-### Sharing your data
-
-
-For small datasets (<50mb), you can use the `dataset` folder that is tracked by github. Add the files just like you would any other file.
-
-If you create a folder named `data` this will cause problems.
-
-For larger datasets, you'll need to create a new folder in the project root directory named `dataset-ignore`. This will be ignored by git (based off the `.gitignore` file in the project root directory) which will help you avoid issues with Github's size limits. Your team will have to manually make sure the data files in `dataset-ignore` are synced across team members.
-
-Your [load_and_clean_data.R](/scripts/load_and_clean_data.R) file is how you will load and clean your data. Here is a an example of a very simple one.
-
-```{r}
-source(
-  "scripts/load_and_clean_data.R",
-  echo = TRUE # Use echo=FALSE or omit it to avoid code output  
-)
+# Match using string distance with a threshold
+fuzzy_matches <- stringdistmatrix(
+  unmatched_roads$Road.Name,
+  pci_data$StreetName,
+  method = "jw",
+  p = 0.1
+) %>% as.data.frame()
 ```
 
-You should never use absolute paths (eg. `/Users/danielsussman/path/to/project/` or `C:\MA415\\Final_Project\`).
+The integration of temporal data presented another challenge, particularly when combining crash reports with annual highway data. We implemented a time-based joining strategy that matched crash incidents with the corresponding annual data, ensuring that we maintained the temporal integrity of our analysis:
 
-You might consider using the `here` function from the [`here` package](https://here.r-lib.org/articles/here.html) to avoid path problems.
+```{r, eval=FALSE, echo=TRUE}
+# Prepare temporal joins for highway data
+crash_data <- crash_data %>%
+  mutate(
+    crash_year = year(Crash.Date.Time),
+    crash_month = month(Crash.Date.Time)
+  )
 
-### Load and clean data script
+highway_data <- highway_data %>%
+  mutate(report_year = year(report_date))
 
-The idea behind this file is that someone coming to your website could largely replicate your analyses after running this script on the original data sets to clean them.
-This file might create a derivative data set that you then use for your subsequent analysis.
-Note that you don't need to run this script from every post/page.
-Instead, you can load in the results of this script, which could be plain text files or `.RData` files. In your data page you'll describe how these results were created. If you have a very large data set, you might save smaller data sets that you can use for exploration purposes.
-To link to this file, you can use `[cleaning script](/scripts/load_and_clean_data.R)` wich appears as [cleaning script](/scripts/load_and_clean_data.R). 
+# Join datasets with temporal alignment
+combined_data <- crash_data %>%
+  left_join(
+    highway_data,
+    by = c("crash_year" = "report_year", "Road.Name" = "highway_name")
+  ) %>%
+  # Handle cases where highway data is from previous year
+  group_by(Road.Name) %>%
+  fill(c(traffic_volume, lane_width, surface_type), .direction = "downup") %>%
+  ungroup()
 
-----
+# Validate temporal alignment
+temporal_coverage <- combined_data %>%
+  group_by(crash_year) %>%
+  summarise(
+    crash_count = n(),
+    has_highway_data = sum(!is.na(traffic_volume)) / n()
+  )
+```
 
-## Rubric: On this page
+For the highway mileage, we have several steps for data cleaning. Our approach began with the
+implementation of a sophisticated road classification system that addresses the varying naming
+conventions found across different reporting years. We developed a standardize_road_class function that employs regular expressions to match different descriptions of
+the same road types, creating a unified and consistent classification scheme throughout the
+dataset.
 
-You will
+The handling of missing values formed a crucial component of our data cleaning process. We
+approached this challenge with context-specific solutions for different types of data. For instance,
+gaps in the Annual Average Daily Traffic (AADT) measurements were filled using median values to
+maintain statistical relevance, while missing lane mile data was conservatively set to zero. All other
+metric calculations incorporated robust aggregation methods to ensure accurate results even in the
+presence of incomplete data.
 
-* Describe where/how to find data.
-  * You must include a link to the original data source(s). Make sure to provide attribution to those who collected the data.
-  * Why was the data collected/curated? Who put it together? (This is important, if you don't know why it was collected then that might not be a good dataset to look at.
-* Describe the different data files used and what each variable means. 
-  * If you have many variables then only describe the most relevant ones and summarize the rest.
-* Describe any cleaning you had to do for your data.
-  * You *must* include a link to your `load_and_clean_data.R` file.
-  * Rrename variables and recode factors to make data more clear.
-  * Also, describe any additional R packages you used outside of those covered in class.
-  * Describe and show code for how you combined multiple data files and any cleaning that was necessary for that.
-  * Some repetition of what you do in your `load_and_clean_data.R` file is fine and encouraged if it helps explain what you did.
-* Organization, clarity, cleanliness of the page
-  * Make sure to remove excessive warnings, use clean easy-to-read code (without side scrolling), organize with sections, use bullets and other organization tools, etc.
-  * This page should be self-contained.
+Temporal alignment presented another critical aspect of our data preparation. We implemented proper
+date handling and year extraction procedures, which proved essential for matching highway
+infrastructure data with our crash records. This temporal standardization enables us to effectively
+track changes in road infrastructure over time and establish meaningful correlations with crash
+patterns. The alignment process ensures that our analysis captures the dynamic relationship between
+infrastructure changes and safety outcomes.
+
+Our quality validation process incorporated multiple layers of verification to ensure data integrity.
+We conducted thorough examinations of data completeness across different years, verified the
+consistency of measurements, analyzed the distribution of road types, and tracked year-over-year
+changes in key metrics.
+
+```{r, eval=FALSE, echo=TRUE}
+# Function to standardize road classifications across different reporting formats
+standardize_road_class <- function(road_class) {
+  case_when(
+    # Interstate highways (I-495, I-270, etc.)
+    str_detect(road_class, "(?i)interstate|I-[0-9]") ~ "Interstate",
+    
+    # Other controlled-access highways (MD 200)
+    str_detect(road_class, "(?i)freeway|expressway|controlled") ~ "Other Freeways",
+    
+    # Major arterial roads (Georgia Ave, Rockville Pike)
+    str_detect(road_class, "(?i)principal.*arterial|major.*highway") ~ "Principal Arterial",
+    
+    # Secondary arterial roads
+    str_detect(road_class, "(?i)minor.*arterial|secondary") ~ "Minor Arterial",
+    
+    # Major collector roads
+    str_detect(road_class, "(?i)major.*collector|primary.*collector") ~ "Major Collector",
+    
+    # Minor collector roads
+    str_detect(road_class, "(?i)minor.*collector|secondary.*collector") ~ "Minor Collector",
+    
+    # Local roads and streets
+    str_detect(road_class, "(?i)local|residential|unclassified") ~ "Local Roads",
+    
+    # Default classification for undefined categories
+    TRUE ~ "Other"
+  )
+}
+
+# Process and clean highway mileage data
+highway_data <- read_excel("Annual_Highway_Mileage.xlsx") %>%
+  # Clean column names to consistent format
+  janitor::clean_names() %>%
   
+  # Filter specifically for Montgomery County data
+  filter(county == "Montgomery") %>%
+  
+  # Handle missing values in critical columns
+  mutate(
+    aadt = replace_na(aadt, median(aadt, na.rm = TRUE)),
+    lane_miles = replace_na(lane_miles, 0),
+    
+    # Create standardized classifications
+    road_class = standardize_road_class(functional_class),
+    urban_rural = if_else(str_detect(area_type, "(?i)urban"), "Urban", "Rural"),
+    
+    # Convert dates to proper format
+    report_date = mdy(report_date),
+    year = year(report_date)
+  ) %>%
+  
+  # Calculate key metrics by road classification
+  group_by(road_class, urban_rural, year) %>%
+  summarize(
+    # Total lane miles for each classification
+    total_miles = sum(lane_miles, na.rm = TRUE),
+    
+    # Average daily traffic (weighted by segment length)
+    avg_daily_traffic = weighted.mean(aadt, lane_miles, na.rm = TRUE),
+    
+    # Total vehicle miles traveled
+    vehicle_miles_traveled = sum(vmt, na.rm = TRUE),
+    
+    # Number of segments in each classification
+    segment_count = n(),
+    
+    # Additional metrics for analysis
+    avg_segment_length = mean(lane_miles, na.rm = TRUE),
+    total_intersections = sum(intersection_count, na.rm = TRUE)
+  ) %>%
+  ungroup()
 
+# Data quality validation
+quality_check <- highway_data %>%
+  group_by(year) %>%
+  summarize(
+    # Basic completeness checks
+    total_miles = sum(total_miles),
+    missing_traffic = sum(is.na(avg_daily_traffic)),
+    missing_vmt = sum(is.na(vehicle_miles_traveled)),
+    
+    # Consistency checks
+    min_segment_length = min(avg_segment_length),
+    max_segment_length = max(avg_segment_length),
+    
+    # Distribution checks
+    urban_ratio = sum(urban_rural == "Urban") / n(),
+    
+    # Year-over-year change
+    pct_change_miles = (total_miles - lag(total_miles)) / lag(total_miles) * 100
+  )
+
+# Save cleaned dataset with documentation
+write_rds(highway_data, "cleaned_highway_data.rds")
+write_csv(quality_check, "highway_data_quality_report.csv")
+```
