@@ -3,7 +3,7 @@ title: "Story and Question"
 description: ""
 toc: true
 draft: FALSE
-engine: shiny 
+filter: shinylive
 
 ---
 
@@ -59,115 +59,13 @@ By understanding these dynamics, we can make smarter decisions—whether that’
 
 So, the next time you drive on a cracked road or slow down in the rain, remember, every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
 
-### Interactive 
-
-```{r}
-#| eval: false
+```{shinylive-r}
 #| echo: false
+#| eval: false
 #| standalone: true
 #| engine: shiny 
 #| viewerHeight: 650 # You will have to adjust this to fit everything
 
-if (!require("shiny")) {
-  install.packages("shiny")
-  library(shiny)
-}
-
-library(shiny)
-library(ggplot2)
-library(dplyr)
-library(tidyverse)
-
-options("readr.edition" = 1) # keep this to ensure you can download the data
-
-# Define UI
-ui <- fluidPage(
-  titlePanel("Interactive Visualization with Shiny"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      selectInput(
-        inputId = "column",
-        label = "Select a column to visualize:",
-        choices = c("Speed.Limit", "Surface.Condition", "Injury.Severity"),
-        selected = "Speed.Limit"
-      ),
-      conditionalPanel(
-        condition = "input.column == 'Speed.Limit'",
-        sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
-      )
-    ),
-    mainPanel(
-      tabsetPanel(
-        tabPanel("Plot", plotOutput("plot")),
-        tabPanel(
-          "Embedded Content",
-          tags$iframe(
-            src = "https://example.com", # Replace with the desired URL
-            width = "100%",
-            height = "600px",
-            frameborder = "0"
-          )
-        )
-      )
-    )
-  )
-)
-
-# Define server logic
-server <- function(input, output) {
-  data <- reactive({
-    # Replace this with your dataset loading logic
-    read_rds(here::here("dataset", "cleaned_dataset.rds")) %>%
-      mutate(
-        # Standardize Injury.Severity categories
-        Injury.Severity = case_when(
-          grepl("fatal", Injury.Severity, ignore.case = TRUE) ~ "Fatal Injury",
-          grepl("serious", Injury.Severity, ignore.case = TRUE) ~ "Serious Injury",
-          TRUE ~ Injury.Severity
-        )
-      )
-  })
-  
-  output$plot <- renderPlot({
-    column_data <- data()[[input$column]]
-    
-    if (is.numeric(column_data)) {
-      # Numeric column: render a histogram
-      ggplot(data(), aes_string(x = input$column)) +
-        geom_histogram(bins = input$bins, fill = "red", color = "white") +
-        theme_minimal() +
-        labs(title = paste("Distribution of", input$column))
-    } else {
-      # Categorical column: render a bar chart with improved x-axis
-      ggplot(data(), aes_string(x = input$column)) +
-        geom_bar(fill = "red", color = "white") +
-        theme_minimal() +
-        theme(
-          axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
-        ) +
-        labs(title = paste("Counts of", input$column))
-    }
-  })
-}
-
-# Run the app
-shinyApp(ui = ui, server = server)
-
-```
-
-```{r}
-
-#| eval: false
-#| echo: false
-#| standalone: true
-#| engine: shiny 
-#| viewerHeight: 650 # You will have to adjust this to fit everything
-
-if (!require("shiny")) {
-  install.packages("shiny")
-  library(shiny)
-}
 
 library(shiny)
 library(ggplot2)
@@ -187,7 +85,7 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput(
         inputId = "column",
-        label = "Select a column to visualize:",
+        label = "Select a column to visualize:",***
         choices = c("Speed.Limit", "Surface.Condition", "Injury.Severity"),
         selected = "Speed.Limit"
       ),
@@ -206,7 +104,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   data <- reactive({
     # Replace this with your dataset loading logic
-    read_rds(here::here("dataset", "cleaned_dataset.rds")) %>%
+    read_rds(here::here(https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/dataset/cleaned_dataset_full.rds)) %>%
       mutate(
         # Standardize Injury.Severity categories
         Injury.Severity = case_when(
@@ -238,8 +136,9 @@ server <- function(input, output) {
     }
   })
 }
-
+*
 # Run the app
 shinyApp(ui = ui, server = server)
 
 ```
+

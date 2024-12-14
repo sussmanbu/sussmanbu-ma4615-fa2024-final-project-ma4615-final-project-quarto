@@ -2,8 +2,10 @@ project:
   type: website
   output-dir: _site
   execute-dir: project
-  resources: scripts
-
+  resources:  
+    dataset
+    cleaned_dataset_full.rds
+  
 website:
   title: "Road Real Talk: Crashes, Conditions, and Rescue"
   navbar:
@@ -16,7 +18,4 @@ format:
   html:
     theme: cosmo
     css: styles.css
-    
-resources:
-  - script 
-  - dataset_for_shiny: "images/cleaned_dataset.rds"
+  
