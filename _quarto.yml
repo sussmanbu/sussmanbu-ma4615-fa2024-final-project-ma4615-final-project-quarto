@@ -16,3 +16,7 @@ format:
   html:
     theme: cosmo
     css: styles.css
+    
+resources:
+  - script 
+  - dataset_for_shiny: "images/cleaned_dataset.rds"
