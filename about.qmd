@@ -13,6 +13,8 @@ about:
     - icon: github
       text: Github
       href: https://github.com/sussmanbu/
+filters: 
+  - shinylive
 ---
 
 This is a website for the final project for MA[46]15 Data Science with R by CRASH OUT
