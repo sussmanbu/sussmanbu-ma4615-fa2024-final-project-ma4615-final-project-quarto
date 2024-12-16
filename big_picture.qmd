@@ -58,7 +58,8 @@ So, the next time you drive on a cracked road or slow down in the rain, remember
 ```{shinylive-r}
 #| echo: false
 #| standalone: true
-#| viewerHeight: 640 
+#| viewerHeight: 640
+#| embed-resources: false 
 suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(tidyverse))
 
