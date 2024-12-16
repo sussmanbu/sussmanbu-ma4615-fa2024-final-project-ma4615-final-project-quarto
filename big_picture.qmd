@@ -60,7 +60,6 @@ So, the next time you drive on a cracked road or slow down in the rain, remember
 #| echo: FALSE
 #| viewerHeight: 640 
 
-library(shiny)
 library(tidyverse)
 options("readr.edition" = 1)
 
@@ -103,7 +102,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   # Load data from the provided URL
-  data <- read_rds("https://github.com/sussmanbu/ma-4615-fa24-final-project-group-1/blob/main/dataset/subset_data.rds")
+  data <- read_rds("https://github.com/sussmanbu/ma-4615-fa24-final-project-group-1/blob/main/subset_data.rds")
   
   # Create histogram based on user input
   output$histPlot <- renderPlot({
@@ -133,5 +132,15 @@ server <- function(input, output) {
 # Create Shiny app ----
 shinyApp(ui = ui, server = server)
 
+
+```
+
+```{r}
+# Load data with error handling
+data <- tryCatch({
+  readRDS("dataset/subset_data.rds")
+}, error = function(e) {
+  stop("Error: Could not load the dataset. Check the URL or data format.")
+})
 
 ```
