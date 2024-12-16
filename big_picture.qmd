@@ -3,7 +3,9 @@ title: "Story and Question"
 description: ""
 toc: true
 draft: FALSE
-filter: shinylive
+filters: 
+- shinylive
+embed-resources: false
 ---
 
 Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
@@ -54,14 +56,13 @@ By understanding these dynamics, we can make smarter decisions—whether that’
 
 So, the next time you drive on a cracked road or slow down in the rain, remember, every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
 
-```{shinylive-r,message=FALSE}
+```{shinylive-r}
 #| eval: false
+#| echo: false
 #| standalone: true
-#| echo: FALSE
 #| viewerHeight: 640 
-
-library(tidyverse)
-library(shinylive)
+suppressPackageStartupMessages('tidyverse')
+suppressPackageStartupMessages('shiny')
 
 options("readr.edition" = 1)
 
@@ -105,14 +106,23 @@ server <- function(input, output) {
   
   # Load data from the provided URL
   data <- read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/scripts/subset_data.rds")
-  
-  # Create histogram based on user input
+  # Updated histogram/bar plot logic
   output$histPlot <- renderPlot({
-    ggplot(data, aes_string(x = input$selected_column)) +
-      geom_histogram(bins = input$bins, fill = "steelblue", color = "black") +
-      labs(x = input$selected_column, y = "Count",
-           title = paste("Histogram of", input$selected_column)) +
-      theme_minimal()
+    if (is.numeric(data[[input$selected_column]])) {
+      # Numeric columns: Use histogram
+      ggplot(data, aes(x = !!sym(input$selected_column))) +
+        geom_histogram(bins = input$bins, fill = "steelblue", color = "black") +
+        labs(x = input$selected_column, y = "Count",
+             title = paste("Histogram of", input$selected_column)) +
+        theme_minimal()
+    } else {
+      # Categorical columns: Use bar chart
+      ggplot(data, aes(x = !!sym(input$selected_column))) +
+        geom_bar(fill = "steelblue", color = "black") +
+        labs(x = input$selected_column, y = "Count",
+             title = paste("Bar Chart of", input$selected_column)) +
+        theme_minimal()
+    }
   })
   
   # Generate insights based on selected column
@@ -130,6 +140,7 @@ server <- function(input, output) {
     }
   })
 }
+
 
 # Create Shiny app ----
 shinyApp(ui, server)

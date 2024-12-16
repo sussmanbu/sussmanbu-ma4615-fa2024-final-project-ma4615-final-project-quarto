@@ -3,7 +3,6 @@ project:
   output-dir: _site
   execute-dir: project
   resources: [
-    subset_data.rds,
     scripts
   ]
     
