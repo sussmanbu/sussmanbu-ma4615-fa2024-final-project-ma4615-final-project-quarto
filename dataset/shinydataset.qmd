@@ -1,0 +1,25 @@
+---
+title: Data
+description: Creating Shiny dataset
+toc: true
+draft: false
+execute:
+  enabled: false
+---
+
+```{r}
+data <- readRDS("dataset/cleaned_dataset_full.rds")
+
+subset_data <- data[,c("Speed.Limit", "Surface.Condition", "Injury.Severity")]
+
+subset_data$Surface.Condition[subset_data$Surface.Condition == ""] <- "N/A"
+
+subset_data <- subset_data[1:50,]
+
+saveRDS(subset_data,file = "dataset/subset_data.rds")
+
+loaded_data <- readRDS("subset_data.rds")
+
+print(head(loaded_data))
+
+```

@@ -4,7 +4,6 @@ description: ""
 toc: true
 draft: FALSE
 filter: shinylive
-
 ---
 
 Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
@@ -37,19 +36,15 @@ Our polynomial regression plot captures this complexity and adds a new layer to 
 
 Want to see these patterns for yourself? We’ve built an interactive dashboard where you can dig into the data.
 
-Toggle between weather conditions to see how rain or wet roads impact accident trends.
-Compare the results of linear and nonlinear models to understand the bigger picture.
-It’s an easy way to explore what’s happening on our roads and what factors matter most.
+Toggle between weather conditions to see how rain or wet roads impact accident trends. Compare the results of linear and nonlinear models to understand the bigger picture. It’s an easy way to explore what’s happening on our roads and what factors matter most.
 
 **The Big Takeaways: Better Roads Help—But Not Much**
 
-While smoother pavement is linked to slightly fewer accidents, the effect is small. Weather and Wet Roads Matter More
-Wet roads increase accidents, while rainy weather may make drivers more cautious.
+While smoother pavement is linked to slightly fewer accidents, the effect is small. Weather and Wet Roads Matter More Wet roads increase accidents, while rainy weather may make drivers more cautious.
 
 Complex Relationships
 
-The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role.
-What This Means for Safer Roads
+The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role. What This Means for Safer Roads
 
 Our findings point to a broader truth
 
@@ -59,86 +54,84 @@ By understanding these dynamics, we can make smarter decisions—whether that’
 
 So, the next time you drive on a cracked road or slow down in the rain, remember, every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
 
-```{shinylive-r}
-#| echo: false
+```{r}
 #| eval: false
 #| standalone: true
-#| engine: shiny 
-#| viewerHeight: 650 # You will have to adjust this to fit everything
-
+#| echo: FALSE
+#| viewerHeight: 640 
 
 library(shiny)
-library(ggplot2)
-library(dplyr)
 library(tidyverse)
+options("readr.edition" = 1)
 
- 
-
-options("readr.edition" = 1) # keep this to ensure you can download the data
-
-
-# Define UI
+# Define UI for app ----
 ui <- fluidPage(
-  titlePanel("Interactive Visualization with Shiny"),
   
+  # App title ----
+  titlePanel("Interactive Crash Data Exploration"),
+  
+  # Sidebar layout with input and output definitions ----
   sidebarLayout(
+    # Sidebar panel for inputs
     sidebarPanel(
-      selectInput(
-        inputId = "column",
-        label = "Select a column to visualize:",***
-        choices = c("Speed.Limit", "Surface.Condition", "Injury.Severity"),
-        selected = "Speed.Limit"
-      ),
-      conditionalPanel(
-        condition = "input.column == 'Speed.Limit'",
-        sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
-      )
+      # Input: Select column to visualize
+      selectInput(inputId = "selected_column", 
+                  label = "Select a Column to Visualize:",
+                  choices = c("Speed.Limit", "Injury.Severity", "Surface.Condition"),
+                  selected = "Speed.Limit"),
+      
+      # Input: Slider for the number of bins
+      sliderInput(inputId = "bins",
+                  label = "Number of bins:",
+                  min = 1,
+                  max = 50,
+                  value = 20)
     ),
+    
+    # Main panel for displaying outputs
     mainPanel(
-      plotOutput("plot")
+      # Output: Histogram
+      plotOutput(outputId = "histPlot"),
+      
+      # Display Insights
+      verbatimTextOutput(outputId = "summary")
     )
   )
 )
 
-# Define server logic
+# Define server logic ----
 server <- function(input, output) {
-  data <- reactive({
-    # Replace this with your dataset loading logic
-    read_rds(here::here(https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/dataset/cleaned_dataset_full.rds)) %>%
-      mutate(
-        # Standardize Injury.Severity categories
-        Injury.Severity = case_when(
-          grepl("fatal", Injury.Severity, ignore.case = TRUE) ~ "Fatal Injury",
-          grepl("serious", Injury.Severity, ignore.case = TRUE) ~ "Serious Injury",
-          TRUE ~ Injury.Severity
-        )
-      )
+  
+  # Load data from the provided URL
+  data <- read_rds("https://github.com/sussmanbu/ma-4615-fa24-final-project-group-1/blob/main/dataset/subset_data.rds")
+  
+  # Create histogram based on user input
+  output$histPlot <- renderPlot({
+    ggplot(data, aes_string(x = input$selected_column)) +
+      geom_histogram(bins = input$bins, fill = "steelblue", color = "black") +
+      labs(x = input$selected_column, y = "Count",
+           title = paste("Histogram of", input$selected_column)) +
+      theme_minimal()
   })
   
-  output$plot <- renderPlot({
-    column_data <- data()[[input$column]]
-    
-    if (is.numeric(column_data)) {
-      # Numeric column: render a histogram
-      ggplot(data(), aes_string(x = input$column)) +
-        geom_histogram(bins = input$bins, fill = "red", color = "white") +
-        theme_minimal() +
-        labs(title = paste("Distribution of", input$column))
-    } else {
-      # Categorical column: render a bar chart with improved x-axis
-      ggplot(data(), aes_string(x = input$column)) +
-        geom_bar(fill = "red", color = "white") +
-        theme_minimal() +
-        theme(
-          axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
-        ) +
-        labs(title = paste("Counts of", input$column))
+  # Generate insights based on selected column
+  output$summary <- renderPrint({
+    selected_data <- data[[input$selected_column]]
+    if (input$selected_column == "Speed.Limit") {
+      avg_speed <- mean(selected_data, na.rm = TRUE)
+      cat("Average Speed Limit (when crash occurred):", round(avg_speed, 2), "mph")
+    } else if (input$selected_column == "Injury.Severity") {
+      cat("Injury Severity Counts:\n")
+      print(table(selected_data, useNA = "ifany"))
+    } else if (input$selected_column == "Surface.Condition") {
+      cat("Surface Condition Distribution:\n")
+      print(table(selected_data, useNA = "ifany"))
     }
   })
 }
-*
-# Run the app
+
+# Create Shiny app ----
 shinyApp(ui = ui, server = server)
 
-```
 
+```
