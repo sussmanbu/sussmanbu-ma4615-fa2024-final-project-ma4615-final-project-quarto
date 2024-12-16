@@ -105,7 +105,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   # Load data from the provided URL
-  data <- read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/scripts/subset_data.rds")
+  data <- read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/dataset/subset_data.rds")
   # Updated histogram/bar plot logic
   output$histPlot <- renderPlot({
     if (is.numeric(data[[input$selected_column]])) {

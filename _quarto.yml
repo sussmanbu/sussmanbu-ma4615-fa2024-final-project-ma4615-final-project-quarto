@@ -3,7 +3,8 @@ project:
   output-dir: _site
   execute-dir: project
   resources: [
-    scripts
+    scripts,
+    dataset
   ]
     
 website:
