@@ -54,13 +54,15 @@ By understanding these dynamics, we can make smarter decisions—whether that’
 
 So, the next time you drive on a cracked road or slow down in the rain, remember, every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
 
-```{r}
+```{shinylive-r,message=FALSE}
 #| eval: false
 #| standalone: true
 #| echo: FALSE
 #| viewerHeight: 640 
 
 library(tidyverse)
+library(shinylive)
+
 options("readr.edition" = 1)
 
 # Define UI for app ----
@@ -102,7 +104,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   # Load data from the provided URL
-  data <- read_rds("https://github.com/sussmanbu/ma-4615-fa24-final-project-group-1/blob/main/subset_data.rds")
+  data <- read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/scripts/subset_data.rds")
   
   # Create histogram based on user input
   output$histPlot <- renderPlot({
@@ -130,17 +132,6 @@ server <- function(input, output) {
 }
 
 # Create Shiny app ----
-shinyApp(ui = ui, server = server)
-
-
-```
-
-```{r}
-# Load data with error handling
-data <- tryCatch({
-  readRDS("dataset/subset_data.rds")
-}, error = function(e) {
-  stop("Error: Could not load the dataset. Check the URL or data format.")
-})
+shinyApp(ui, server)
 
 ```
