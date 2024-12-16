@@ -59,8 +59,8 @@ So, the next time you drive on a cracked road or slow down in the rain, remember
 #| echo: false
 #| standalone: true
 #| viewerHeight: 640 
-suppressPackageStartupMessages('tidyverse')
-suppressPackageStartupMessages('shiny')
+suppressPackageStartupMessages(library(shiny))
+suppressPackageStartupMessages(library(tidyverse))
 
 options("readr.edition" = 1)
 
@@ -105,23 +105,23 @@ server <- function(input, output) {
   # Load data from the provided URL
   data <- read_rds("https://sussmanbu.github.io/ma-4615-fa24-final-project-group-1/dataset/subset_data.rds")
   # Updated histogram/bar plot logic
-  # output$histPlot <- renderPlot({
-  #   if (is.numeric(data[[input$selected_column]])) {
-  #     # Numeric columns: Use histogram
-  #     ggplot(data, aes(x = !!sym(input$selected_column))) +
-  #       geom_histogram(bins = input$bins, fill = "steelblue", color = "black") +
-  #       labs(x = input$selected_column, y = "Count",
-  #            title = paste("Histogram of", input$selected_column)) +
-  #       theme_minimal()
-  #   } else {
-  #     # Categorical columns: Use bar chart
-  #     ggplot(data, aes(x = !!sym(input$selected_column))) +
-  #       geom_bar(fill = "steelblue", color = "black") +
-  #       labs(x = input$selected_column, y = "Count",
-  #            title = paste("Bar Chart of", input$selected_column)) +
-  #       theme_minimal()
-  #   }
-  # })
+  output$histPlot <- renderPlot({
+    if (is.numeric(data[[input$selected_column]])) {
+      # Numeric columns: Use histogram
+      ggplot(data, aes(x = !!sym(input$selected_column))) +
+        geom_histogram(bins = input$bins, fill = "steelblue", color = "black") +
+        labs(x = input$selected_column, y = "Count",
+             title = paste("Histogram of", input$selected_column)) +
+        theme_minimal()
+    } else {
+      # Categorical columns: Use bar chart
+      ggplot(data, aes(x = !!sym(input$selected_column))) +
+        geom_bar(fill = "steelblue", color = "black") +
+        labs(x = input$selected_column, y = "Count",
+             title = paste("Bar Chart of", input$selected_column)) +
+        theme_minimal()
+    }
+  })
   
   # Generate insights based on selected column
   output$summary <- renderPrint({
