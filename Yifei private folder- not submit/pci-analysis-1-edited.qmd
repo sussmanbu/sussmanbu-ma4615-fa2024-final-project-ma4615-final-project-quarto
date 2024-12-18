@@ -1,0 +1,272 @@
+---
+title: "PCI Analysis 1"
+author: "Yifei Zhang"
+output: html_document
+draft: Yes
+---
+
+
+
+```{r setup, include=FALSE}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(sf)
+
+# Paths for data files
+csv_file_path <- "dataset/Pavement_Condition_Index.csv"
+rdata_file_path <- "dataset/Pavement_Condition_Index.RData"
+```
+
+
+
+```{r load_data}
+# Convert CSV to RData if necessary
+if (!file.exists(rdata_file_path)) {
+  Pavement_Condition_Index <- read.csv(csv_file_path)
+  save(Pavement_Condition_Index, file = rdata_file_path)
+  message("Converted CSV to RData: ", rdata_file_path)
+} else {
+  message("RData file already exists: ", rdata_file_path)
+}
+```
+
+
+
+```{r}
+# Load datasets
+cleaned_dataset <- readRDS("dataset/cleaned_dataset.rds")
+load(rdata_file_path)
+
+# Inspect column names and structure
+print(names(Pavement_Condition_Index))
+print(class(Pavement_Condition_Index))
+```
+
+
+
+```{r}
+# Standardize road names to ensure proper matching
+cleaned_dataset <- cleaned_dataset %>%
+  mutate(Road.Name = tolower(trimws(Road.Name)))
+
+Pavement_Condition_Index <- Pavement_Condition_Index %>%
+  mutate(StreetName = tolower(trimws(StreetName)))
+```
+
+
+
+```{r}
+# Merge datasets by standardized road names
+merged_data <- cleaned_dataset %>%
+  left_join(Pavement_Condition_Index, by = c("Road.Name" = "StreetName"))
+
+# Check for successful join
+print(dim(merged_data))
+summary(merged_data)
+
+# Debugging: Find unmatched road names
+unmatched_names <- setdiff(cleaned_dataset$Road.Name, Pavement_Condition_Index$StreetName)
+print("Unmatched road names:")
+print(unmatched_names)
+```
+
+
+
+```{r}
+# Calculate accident count for each Segment_ID
+merged_data <- merged_data %>%
+  group_by(Segment_ID) %>%
+  mutate(accident_count = n()) %>%
+  ungroup()
+
+# Filter out NA values and create visualization
+filtered_data <- merged_data %>%
+  filter(!is.na(PCI))
+
+if (nrow(filtered_data) > 0) {
+  ggplot(filtered_data, aes(x = PCI, y = accident_count)) +
+    # Add points with slight transparency for better overlap visibility
+    geom_point(color = "#0066CC", alpha = 0.6, size = 1.5) +
+    
+    # Add smoothed line with confidence interval
+    geom_smooth(method = "lm", 
+               color = "#FF4444", 
+               size = 1.2,
+               se = TRUE,  # Show confidence interval
+               fill = "#FF444433") +  # Semi-transparent confidence interval
+    
+    # Customize labels and title
+    labs(
+      title = "Relationship Between Pavement Condition and Accident Frequency",
+      subtitle = "Analysis of PCI Impact on Road Safety",
+      x = "Pavement Condition Index (PCI)",
+      y = "Number of Accidents",
+      caption = "Higher PCI indicates better pavement condition"
+    ) +
+    
+    # Enhanced theme with better grid and formatting
+    theme_minimal() +
+    theme(
+      # Title formatting
+      plot.title = element_text(size = 14, face = "bold", margin = margin(b = 10)),
+      plot.subtitle = element_text(size = 11, color = "gray40", margin = margin(b = 20)),
+      
+      # Axis formatting
+      axis.title = element_text(size = 10, color = "gray20"),
+      axis.text = element_text(size = 9, color = "gray40"),
+      
+      # Grid formatting
+      panel.grid.major = element_line(color = "gray90"),
+      panel.grid.minor = element_line(color = "gray95"),
+      
+      # Add padding around plot
+      plot.margin = margin(20, 20, 20, 20)
+    ) +
+    
+    # Set appropriate scale breaks
+    scale_y_continuous(
+      breaks = seq(0, max(filtered_data$accident_count), by = 10),
+      expand = expansion(mult = c(0.02, 0.08))
+    ) +
+    scale_x_continuous(
+      breaks = seq(0, 100, by = 25),
+      limits = c(0, 100)
+    )
+}
+```
+
+
+
+```{r}
+# Perform stratified analysis by Traffic.Control
+if ("Traffic.Control" %in% names(merged_data)) {
+  merged_data %>%
+    group_by(Traffic.Control) %>%
+    summarize(
+      avg_accidents = mean(accident_count, na.rm = TRUE),
+      avg_pci = mean(PCI, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    print()
+} else {
+  message("Traffic.Control column not found in merged_data.")
+}
+```
+
+
+
+```{r}
+# Create geo_analysis from merged_data
+geo_analysis <- merged_data %>%
+  filter(!is.na(PCI)) %>%                     # Filter rows with valid PCI
+  group_by(Segment_ID) %>%                    # Group by Segment_ID or other grouping variable
+  summarize(
+    avg_pci = mean(PCI, na.rm = TRUE),        # Average PCI
+    accident_count = sum(accident_count),     # Total accident count
+    .groups = "drop"
+  )
+```
+
+
+
+```{r}
+summary(geo_analysis)
+head(geo_analysis)
+```
+
+
+
+```{r}
+# Check if geo_analysis exists and create enhanced logarithmic visualization
+if (exists("geo_analysis")) {
+  geo_analysis %>%
+    mutate(log_accident_count = log1p(accident_count)) %>%
+    ggplot(aes(x = avg_pci, y = log_accident_count)) +
+    # Enhanced point styling
+    geom_point(
+      color = "#1f77b4",  # Professional blue color
+      alpha = 0.7,        # Slight transparency
+      size = 1.5,
+      shape = 16         # Filled circles
+    ) +
+    
+    # Enhanced trend line
+    geom_smooth(
+      method = "lm",
+      color = "#d62728",  # Professional red color
+      size = 1.2,
+      se = TRUE,          # Show confidence interval
+      fill = "#d6272833"  # Semi-transparent confidence interval
+    ) +
+    
+    # Enhanced labels and title
+    labs(
+      title = "Relationship Between Pavement Condition and Accident Frequency",
+      subtitle = "Logarithmic Analysis of PCI Impact",
+      x = "Average Pavement Condition Index (PCI)",
+      y = "Log-transformed Accident Count",
+      caption = "Note: Accident counts are log-transformed (log1p) for better distribution analysis"
+    ) +
+    
+    # Enhanced theme
+    theme_minimal() +
+    theme(
+      # Title styling
+      plot.title = element_text(
+        size = 14,
+        face = "bold",
+        margin = margin(b = 10)
+      ),
+      plot.subtitle = element_text(
+        size = 11,
+        color = "gray40",
+        margin = margin(b = 20)
+      ),
+      
+      # Axis styling
+      axis.title = element_text(
+        size = 10,
+        color = "gray20"
+      ),
+      axis.text = element_text(
+        size = 9,
+        color = "gray40"
+      ),
+      
+      # Grid styling
+      panel.grid.major = element_line(
+        color = "gray90",
+        linewidth = 0.5
+      ),
+      panel.grid.minor = element_line(
+        color = "gray95",
+        linewidth = 0.25
+      ),
+      
+      # Plot margins
+      plot.margin = margin(20, 20, 20, 20),
+      
+      # Caption styling
+      plot.caption = element_text(
+        size = 8,
+        color = "gray40",
+        margin = margin(t = 10)
+      )
+    ) +
+    
+    # Scale adjustments
+    scale_x_continuous(
+      breaks = seq(0, 100, by = 20),
+      limits = c(0, 100),
+      expand = expansion(mult = c(0.02, 0.02))
+    ) +
+    scale_y_continuous(
+      breaks = scales::pretty_breaks(n = 8),
+      expand = expansion(mult = c(0.02, 0.08))
+    )
+} else {
+  message("geo_analysis object not found. Please ensure the data is properly loaded.")
+}
+```
+

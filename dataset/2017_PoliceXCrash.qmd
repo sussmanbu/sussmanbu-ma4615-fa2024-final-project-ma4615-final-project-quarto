@@ -1,0 +1,102 @@
+---
+title: "2017_Mileage data with Crash Reports "
+author: "Primah Muwanga"
+date: "2024-11-18"
+output: html_document
+execute:
+  enabled: false
+---
+```{r}
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(sf)
+library(leaflet)
+```
+
+```{r}
+# Assuming `crash_df` and PoPo are your data frames.
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+crash_data <- readRDS("dataset/cleaned_dataset.rds")
+popo_data <- readRDS("dataset/Police_Reports.rds")
+
+col_crash <- colnames(crash_data)
+col_Popo <- colnames(popo_data)
+
+print(col_crash)
+print(col_Popo)
+```
+
+```{r}
+# Aggregate data
+crash_count <- as.data.frame(table(crash_data$Municipality))
+colnames(crash_count) <- c("City", "Crash_Count")
+
+incident_count <- as.data.frame(table(popo_data$City))
+colnames(incident_count) <- c("City", "Incident_Count")
+
+# Merge data by city
+merged_data <- merge(crash_count, incident_count, by = "City", all = TRUE)
+merged_data[is.na(merged_data)] <- 0  # Replace NA with 0
+
+# Create the bar chart
+library(ggplot2)
+ggplot(merged_data, aes(x = City)) +
+  geom_bar(aes(y = Crash_Count, fill = "Crashes"), stat = "identity", position = "dodge") +
+  geom_bar(aes(y = Incident_Count, fill = "Incidents"), stat = "identity", position = "dodge") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Incident and Crash Counts by City", x = "City", y = "Count", fill = "Type")
+
+
+```
+
+```{r}
+library(lubridate)
+
+# Define thresholds
+time_threshold <- hours(1)
+distance_threshold <- 500  # in meters
+
+```
+
+
+```{r}
+# Extract longitude and latitude from the Location column
+library(stringr)
+
+popo_data$Longitude <- as.numeric(str_extract(popo_data$Location, "-[0-9]+\\.[0-9]+"))
+popo_data$Latitude <- as.numeric(str_extract(popo_data$Location, "(?<= )[0-9]+\\.[0-9]+"))
+
+# Check the extracted columns
+head(popo_data)
+
+
+```
+
+```{r}
+# Create heatmap data
+library(ggplot2)
+library(ggmap)
+library(stringr)
+
+# Combine datasets for visualization
+crash_data$type <- "Crash"
+popo_data$type <- "Incident"
+
+# Select only necessary columns
+crash_locations <- crash_data[, c("Latitude", "Longitude", "type")]
+location_data <- rbind(crash_locations, popo_data[, c("Latitude", "Longitude", "type")])
+
+ggplot(location_data, aes(x = Longitude, y = Latitude)) +
+  stat_density2d(aes(fill = after_stat(level), alpha = ..level..), geom = "polygon") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  facet_wrap(~type) +
+  labs(title = "Heatmap of Crash and Incident Locations", x = "Longitude", y = "Latitude") +
+  theme_minimal()
+
+```
+
+

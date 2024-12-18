@@ -1,0 +1,46 @@
+---
+title: "Blog Post 7 - Wrap-Up: Traffic Safety Analysis in Montgomery County"
+subtitle: ""
+author: "Group 1"
+date: "2024-12-08"
+date-modified: "2024-12-08"
+draft: false
+categories: [analysis]
+---
+
+## Project Overview and Thesis Development
+
+Our analysis of traffic safety in Montgomery County has evolved into a comprehensive study that integrates multiple datasets to understand the intricate relationships between infrastructure, emergency response capabilities, and temporal patterns. Through meticulous analysis of crash data, pavement conditions, and emergency response metrics, we've developed a thesis that captures the complex nature of traffic safety in the county: Traffic safety in Montgomery County is influenced by the complex relationship of road infrastructure characteristics (including pavement quality and road type), emergency response capabilities, and temporal patterns, with certain combinations creating high-risk scenarios that affect both crash likelihood and emergency response outcomes.
+
+## Data Integration and Analysis Progress
+
+The depth of our analysis has been significantly enhanced by the integration of several critical datasets. We've incorporated the Pavement Condition Index (PCI), Annual Highway Mileage Reports, EMS Responses from NEMSIS Maryland State Data, Maryland Traffic Volume Maps, and Montgomery County Crime Data. This comprehensive data integration has allowed us to examine traffic safety from multiple angles, providing a more nuanced understanding of the factors contributing to crash incidents and their outcomes.
+
+Our analysis revealed several unexpected patterns that challenged our initial assumptions. Most notably, we discovered that the relationship between road quality and accident occurrence isn't linear – most crashes occur on roads with moderate Pavement Condition Index ratings (30-80), rather than on the poorest quality roads as initially hypothesized. This finding suggests that other factors, such as traffic volume and speed limits, may play more significant roles in crash likelihood than pavement quality alone.
+
+## Statistical Analysis and Findings
+
+Our regression analysis of the Pavement Condition Index yielded interesting results. With an intercept of 11.09965 and a PCI coefficient of -0.04909 (statistically significant at p=0.00337), we found a weak but significant relationship between pavement quality and accident rates. However, the low adjusted R-squared value of 0.004102 suggests that pavement quality alone explains only a small portion of the variance in crash occurrences, pointing to the need for a more comprehensive model that incorporates additional variables.
+
+In our investigation of potential correlations between crime rates and traffic safety, we found a very weak positive correlation (0.0326) between daily crime counts and crashes. While we observed slight variations in crash distribution patterns on high-crime days, the relationship wasn't strong enough to suggest a meaningful connection between criminal activity and traffic safety incidents.
+
+## Enhanced Visualization
+
+To effectively communicate our findings, we're developing a suite of sophisticated visualizations that will illustrate the complex relationships we've uncovered. Our infrastructure analysis visualizations will demonstrate the relationships between crash rates and various surface types, road widths, and functional classifications. We're particularly focused on creating mileage-adjusted crash rate visualizations that will provide a more accurate representation of road safety across different route types.
+
+Temporal pattern analysis will be enhanced through visualizations that show year-over-year infrastructure performance trends and safety metrics over time. These visualizations will incorporate multiple variables to show how different factors interact across various time scales, from daily patterns to seasonal trends.
+
+## Statistical Methodology Refinement
+
+Our statistical approach has evolved to include more sophisticated models that better capture the complexity of traffic safety. We're implementing negative binomial regression for crash frequency analysis, as this method better handles the count nature of crash data compared to traditional linear regression. Time series analysis is being applied to temporal patterns to identify seasonal and cyclical trends in crash occurrences.
+
+The multiple linear regression model we're developing incorporates several key predictors, including PCI, road width, and speed limits. We're particularly interested in the interaction terms between PCI and speed limits, as preliminary analysis suggests that the impact of pavement quality on safety varies significantly at different speed levels.
+
+## Website Structure and Presentation
+
+We are working on putting the website with an introduction that outlines our project scope and objectives, we move through sections on data cleaning and methodology, analysis and visualizations, geographic distribution analysis, temporal pattern examination, and infrastructure impact assessment. Each section builds upon the previous ones to create a narrative that supports our thesis while acknowledging the complexities inherent in traffic safety analysis.
+
+## Future Directions and Implications
+
+As we move toward completing this project, we're focusing on refining our visualizations using advanced tools and techniques. We're implementing interactive features that will allow users to explore the data in more detail, and we're developing detailed annotations that will help guide readers through our findings. Hopefully, our findings could help inform policy decisions and infrastructure improvements in Montgomery County, potentially leading to more effective traffic safety measures.
+

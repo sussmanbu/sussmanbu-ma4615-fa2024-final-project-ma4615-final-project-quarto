@@ -1,70 +1,162 @@
 ---
 title: Analysis
-description: Here we provide a detailed analysis using more sophisticated statistics techniques.
 toc: true
 draft: false
 ---
 
-![](https://upload.wikimedia.org/wikipedia/commons/7/77/Pebbleswithquarzite.jpg)
+![](images/analysis-page.png)
 
-This comes from the file `analysis.qmd`.
+## Motivation for Data Analysis
 
-We describe here our detailed data analysis. This page will provide an overview of what questions you addressed, illustrations of relevant aspects of the data with tables and figures, and a statistical model that attempts to answer part of the question. You'll also reflect on next steps and further analysis.
+Traffic accidents arise from a complex interplay of factors, including infrastructure quality, environmental conditions, and driver behavior. One of the key variables of interest is the Pavement Condition Index (PCI), which quantifies pavement quality. While one might suspect that deteriorating pavement conditions could contribute to higher accident counts, the strength and nature of this relationship remain unclear. In addition, other factors—such as weather and surface conditions—may interact with PCI in ways that either amplify or mitigate its influence on accidents.
 
-The audience for this page is someone like your class mates, so you can expect that they have some level of statistical and quantitative sophistication and understand ideas like linear and logistic regression, coefficients, confidence intervals, overfitting, etc. 
+## Questions We Aim to Answer
 
-While the exact number of figures and tables will vary and depend on your analysis, you should target around 5 to 6. An overly long analysis could lead to losing points.
-If you want you can link back to your blog posts or create separate pages with more details.
+In this data analysis, our goal is to explore the impact of PCI (Pavement Condition Index) on the number of traffic accidents and assess the role of weather conditions (Weather) and surface conditions (Surface Condition) in this relationship. By constructing various regression models, including linear and polynomial models, we analyze whether the relationship between PCI and accident count is significant and whether it exhibits nonlinear trends. Additionally, we consider the effects of weather and surface conditions on accident count to gain a more comprehensive understanding of the issue. The specific questions to address are as follows:
 
-The style of this paper should aim to be that of an academic paper. 
-I don't expect this to be of publication quality but you should keep that aim in mind.
-Avoid using "we" too frequently, for example "We also found that ...". Describe your methodology and your findings but don't describe your whole process.
+- How does the variation in PCI affect the number of traffic accidents? Is there a significant relationship between the two?
+- Is the relationship between PCI and accident count linear or nonlinear? Can a polynomial model capture more complex patterns?
+- How do weather conditions (Weather) and surface conditions (Surface Condition) influence the relationship between PCI and accident count? Do they have a significant impact on the number of accidents?
 
-### Example of loading data
+## Context and Illustrations for the Analysis
 
-The code below shows an example of loading the loan refusal data set (which you should delete at some point).
+After cleaning and merging the crash and roadway data, an initial exploratory analysis was conducted. One of the first steps was to visualize the relationship between PCI and accident count. The scatterplot below shows accident count versus PCI with a fitted trend line:
 
-```{r}
-library(tidyverse)
-print(getwd())
-data <- read_rds(here::here("dataset/loan_refusal_clean.rds"))
-```
+![](scripts/plot intial.png)
 
-## Note on Attribution
+The plot reveals a slight negative correlation between PCI and accident count, but the overall impact appears weak. The trend line is relatively flat, and the data points are highly scattered. This result suggests that PCI alone has limited explanatory power for accident count, indicating that other factors may have a greater influence, which will be a key consideration in the model-building process.
 
-In general, you should try to provide links to relevant resources, especially those that helped you. You don't have to link to every StackOverflow post you used but if there are explainers on aspects of the data or specific models that you found helpful, try to link to those. Also, try to link to other sources that might support (or refute) your analysis. These can just be regular hyperlinks. You don't need a formal citation.
+## Modeling and Inference
 
-If you are directly quoting from a source, please make that clear. You can show quotes using `>` like this
+### Formal Statistical Modeling Framework
 
-```         
-> To be or not to be.
-```
+To analyze the relationship between PCI and accident count, we began with a simple linear regression model:
 
-> To be or not to be.
+$$
+\text{Accidents} = \beta_0 + \beta_1(\text{PCI}) + \varepsilon.
+$$
 
-------------------------------------------------------------------------
+However, the distribution of accident counts was skewed and included outliers. To address this, we applied a log-plus-one transformation:
 
-## Rubric: On this page
+$$
+\log(1 + \text{Accidents}) = \beta_0 + \beta_1(\text{PCI}) + \varepsilon.
+$$
 
-You will
+This transformation reduced the impact of outliers and brought the residuals closer to normality. Next, we incorporated weather and surface condition variables into the model:
 
--   Introduce what motivates your Data Analysis (DA)
-    -   Which variables and relationships are you most interested in?
-    -   What questions are you interested in answering?
-    -   Provide context for the rest of the page. This will include figures/tables that illustrate aspects of the data of your question.
--   Modeling and Inference
-    -   The page will include some kind of formal statistical model. This could be a linear regression, logistic regression, or another modeling framework.
-    -   Explain the ideas and techniques you used to choose the predictors for your model. (Think about including interaction terms and other transformations of your variables.)
-    -   Describe the results of your modelling and make sure to give a sense of the uncertainty in your estimates and conclusions.
--   Explain the flaws and limitations of your analysis
-    -   Are there some assumptions that you needed to make that might not hold? Is there other data that would help to answer your questions?
--   Clarity Figures
-    -   Are your figures/tables/results easy to read, informative, without problems like overplotting, hard-to-read labels, etc?
-    -   Each figure should provide a key insight. Too many figures or other data summaries can detract from this. (While not a hard limit, around 5 total figures is probably a good target.)
-    -   Default `lm` output and plots are typically not acceptable.
--   Clarity of Explanations
-    -   How well do you explain each figure/result?
-    -   Do you provide interpretations that suggest further analysis or explanations for observed phenomenon?
--   Organization and cleanliness.
-    -   Make sure to remove excessive warnings, hide most or all code, organize with sections or multiple pages, use bullets, etc.
-    -   This page should be self-contained, i.e. provide a description of the relevant data.
+$$
+\log(1 + \text{Accidents}) = \beta_0 + \beta_1(\text{PCI}) + \beta_2(\text{Weather}) + \beta_3(\text{Surface.Condition}) + \varepsilon.
+$$
+
+Finally, to explore potential nonlinear relationships, a quadratic term for PCI was introduced:
+
+$$
+\log(1 + \text{Accidents}) = \beta_0 + \beta_1(\text{PCI}) + \beta_2(\text{PCI}^2) + \beta_3(\text{Weather}) + \beta_4(\text{Surface.Condition}) + \varepsilon.
+$$
+
+## Ideas and Techniques for Choosing Predictors
+
+In the simple regression analysis, we noticed that the distribution of accident counts exhibited significant variability and outliers, which could negatively affect model fitting and result interpretation. To address this, We applied a logarithmic transformation (log1p) to the accident count data to reduce the impact of outliers, resulting in a smoother and closer-to-normal distribution.
+
+In the linear regression analysis, we found that the linear relationship between PCI (Pavement Condition Index) and accident count was weak. The trend line was relatively flat, and the model's goodness of fit was low, with an adjusted R² of only about 4.2%. This indicates that the linear model might not adequately capture the complexity of the relationship. Additionally, the data distribution suggested that the changes in accident counts across different PCI ranges might not follow a simple linear pattern, showing some nonlinear characteristics. To better capture this, We introduced a quadratic polynomial term for PCI (poly(PCI, 2)) to construct a nonlinear regression model. This approach modeled both first-order and second-order effects, revealing a U-shaped or inverted U-shaped trend in the influence of PCI on accident counts.
+
+## Modeling Results
+
+**Univariate Linear Regression**
+
+The results of the univariate linear regression indicate a weak negative correlation between PCI (Pavement Condition Index) and accident count, with a slope of -0.037, which is statistically significant (p-value < 0.001). However, the model's explanatory power is extremely low, with an R² of only 0.0043, meaning PCI accounts for just 0.43% of the variation in accident count. Additionally, the residual standard error is high (8.019), reflecting a substantial prediction error. While the overall model is statistically significant (F-statistic p-value < 0.001), its practical impact is minimal, suggesting the need for additional variables or nonlinear methods to improve explanatory power.
+
+After applying a logarithmic transformation to accident counts, the impact of outliers was reduced, but the relationship between PCI and the log-transformed accident count remained very weak. Scatterplots and linear regression trend lines showed almost no noticeable linear association, with the trend line being nearly flat, indicating that PCI has a limited influence on accident count.
+
+Here is the visualization:
+
+![](scripts/plot log2.png)
+
+**Multivariate Regression with Weather and Surface Conditions**
+
+The multivariate regression results revealed a significant negative correlation between PCI and accident count (coefficient: -0.0355), suggesting that better pavement conditions are associated with slightly fewer accidents. Weather and surface conditions also had significant effects on accident count. For instance, wet surfaces significantly increased accident counts, while rainy weather was associated with fewer accidents, potentially because drivers exercised more caution. Despite the statistical significance of these variables, the model's goodness of fit remained low, with an adjusted R² of only 4.2%, indicating that accident count is likely influenced by many other unaccounted factors.
+
+![](scripts/plot muti.png)
+
+**Nonlinear Regression with PCI Quadratic Term**
+
+The nonlinear regression results indicate that by including the quadratic polynomial term for PCI (poly(PCI, 2)), the nonlinear relationship between PCI and accident count was captured. The negative coefficient of the first-order term (-52.66172) and the positive coefficient of the second-order term (34.10442) suggest that the effect of PCI on accident count exhibits a U-shaped or inverted U-shaped trend, where accident count initially increases slightly with PCI and then decreases. Additionally, the significance and directionality of weather and surface conditions remain consistent; for example, rainy weather (WeatherRAINING) significantly reduces accident counts, while wet surfaces (Surface.ConditionWATER) significantly increase them.
+
+![](scripts/plot noelinear.png)
+
+Although the model's goodness of fit improved slightly (adjusted R² = 4.4%), and the residual standard error (7.857) showed minor improvement, these findings suggest that while the model captures some complexity, accident count is still heavily influenced by other unmodeled factors.
+
+However, it is important to note some uncertainty in our estimates and conclusions. On one hand, while the coefficients are statistically significant, the model's fit remains low, indicating that these variables explain only a small portion of the variation in accident count. On the other hand, the scattered data distribution may make the results particularly sensitive to extreme values or low-frequency categories, which can affect the magnitude and direction of coefficients. Furthermore, the nonlinear relationship between PCI and accident count, such as the U-shaped or inverted U-shaped trend, might depend on sample characteristics and data distribution, requiring further validation and analysis to draw more reliable conclusions.
+
+## Additional Insights from Highway Mileage Data and Crime Data
+
+### Highway Mileage Data
+
+To further contextualize these results, we examined crash distribution data from a highway mileage dataset. This supplementary visualization shows the total number of crashes across various route types and under different surface conditions:
+
+![](images/Crash-Distribution-by-Route-Type-and-Surface-Condition.png)
+
+Each panel contains a set of bars, each bar corresponding to a specific route type. Common route types include County roads, Interstates, State roads (such as Maryland state highways), Municipal roads, Other Public Roadways, and Ramps. The height of each bar indicates the total number of crashes recorded in that year for the given route type. Within each bar, different colors represent distinct surface conditions at the time of the crash: DRY, ICE, N/A (not applicable), UNKNOWN, and WET.
+
+At a glance, DRY conditions (red segments) dominate most of the bars in all years. This suggests that the majority of crashes occur on dry roads, regardless of route type or year. Other surface conditions, such as ICE (green) and WET (purple), appear less frequently, indicating that while inclement weather does contribute to some crashes, it is not as common as crashes on clear, dry pavement. The N/A and UNKNOWN categories (brown and blue segments) vary in proportion from year to year and route to route, indicating occasional gaps or uncertainties in data recording.
+
+Across the years, Interstates and State highways often show some of the higher totals of crashes, perhaps due to greater traffic volume and speed. County and Municipal roads also see their share of crashes, though the counts can fluctuate from year to year. Ramps and Other Public Roadways tend to have fewer crashes in most observed years, reflected by relatively smaller bars. Throughout the six-year span, the general pattern remains consistent: higher crash frequencies on dry surfaces and on busier route types, with smaller contributions from icy or wet conditions and some periodic variability in less traveled road types.
+
+### Crime Data
+
+**Objective**
+
+After exploring the pavement conditions' impact on accident reporting, we analyzed an additional government data set on crime reporting in Montgomery County. We started off we a simple statistical thesis to guide our exploration: 
+
+- Null hypothesis: There is no relationship between daily crime count and daily crash reporting.
+- Alternative hypothesis: There is a relationship between daily crime count and daily crash reporting. 
+
+**Preliminary Set-Up**
+
+To investigate our null hypothesis (and to decide whether we can reject or fail to) we set up both data sets for plotting. This included cleaning the Crime Reporting Data from DATA.GOV to filter out all other counties in Maryland that weren’t Montgomery. Then, to tallie the crime counts we based it on the crime’s start time (a column in the data set). To pull the start date and mutate a column onto the filtered crime data we adjusted the start date variable to be in the correct date-time format. Once we did this, we were able to create a new data frame that counted crimes that occurred on a specific day. Finally, we joined these two frames into a data set that showed all days that had been reported whether crime or crash, and counted each. 
+
+**Analyzing a possible relationship:**
+
+To see if there is anything to this hypothesis or if we don’t have a strong enough claim we used a couple of different plots. We focused on using a simple linear regression model and then using its NQQ and Residual plots to gather evidence for our hypothesis. After plotting we can see the line is nearly horizontal, but there is a slight increase, meaning a possible positive association between our variables. Given that we can calculate the correlation to be about 0.0326, we can see there’s nearly no significant linear relationship between our variables. To further explore the possible relationship between crime and crash data in Montgomery, we ran the NQQ and residual plots to explore the variance, normality, and independence of the data. 
+
+The NQ-Q plot helped to show the quantiles graphed against the standardized quantiles, which helps to show a bit of skewness at the tails of our distribution. Additionally, looking at our Residual plot shows there to be a few outliers, but generally, we can summarize as the fitted values increase our variance decreases. Overall both of these plots are interesting but not necessarily valuable because we can't see any huge significance in either. Additionally, we wouldn’t assume normality or homoscedasticity which eliminates parametric testing options. 
+
+But before we explore possible solutions to what seems to look like an insignificant relationship between crime counts and crash counts, we chose to look at a density plot to get a better visual understanding. 
+
+Density plot of crash counts by crime level:
+
+![Density Plot of Crash Counts by Crime Level](scripts/Density-Plot-of-Crash-Counts-by-Crime-Level.png)
+
+This density graph shows the different distributions of crashes on “High” versus “Low” crime count days. These thresholds are defined by whether the crime count for one day is above or below the median of total crime counts calculated. There seems to be a significant overlap between the distributions which means the range for crash reports is about the same given higher or lower crime counts. However, there is a slight shift to the right for the “High” distribution which agrees with our previous scatterplot.
+
+**Hypothesis Conclusion**
+
+Given the somewhat okay fit from our linear regression model, using the statistics we can obtain the beta coefficient and whether it seems significant.
+
+- Beta is 0.2129, which suggests for each additional crime tallied, we get a slight increase in crashes
+- Our pvalue is 0.0506 with a confidence of 0.95, it seems to be too close to the threshold to be significant
+- R^2 shows only 0.1% of the variation in the daily crash count is explained by the daily crime count
+- Our residual standard error of 17.56 indicates that a lot of the variability found in this relationship cannot be explained 
+- Lastly with a F_stat (assuming our data is mostly normal)  of 3.823 and a critical value of 1.96
+
+Therefore our group concludes that for this exploration of data, we fail to reject the null. This isn’t great as there’s not much we can conclude from the data itself in relation to the crash reporting.
+
+**Discussion of Results**
+
+If we focused solely on the Crime dataset, we could explore a possible relationship between crime and accident count in greater detail. However, the statistical analysis suggests a very small association between the variables. From a non-statistical perspective, one might hypothesize that increased crime could include incidents such as DUIs or car crashes involving distracted drivers. To investigate this further, it might be more appropriate to model the data using a Poisson distribution or logistic regression, given the nature of the variables.
+
+## Limitations
+
+When analyzing the relationship between PCI (Pavement Condition Index) and accident count, it is important to consider certain assumptions and data limitations. The current model assumes a simple linear or nonlinear relationship between PCI and accident count, but the actual situation may be more complex. Additionally, accident counts may be influenced by temporal or spatial factors.
+
+The model's fit is not ideal, indicating that other significant factors (such as traffic volume, speed limits, or time of day) might have a greater impact on accident count. Moreover, the data distribution is quite dispersed, and some extreme values or low-frequency categories could significantly affect the results.
+
+Data limitations also introduce uncertainty. The distribution of accident counts is highly scattered, and extreme values or rare categories (like certain surface conditions) may skew the results. The nonlinear relationship and the influence of weather and surface conditions may depend on sample characteristics or localized traffic patterns not accounted for here.
+
+Future research could incorporate richer variables—such as detailed traffic volume metrics, time-of-day effects, driver demographics, and enforcement intensity—to better understand the multifaceted nature of traffic accidents. More sophisticated models and data sources might eventually tease out subtler influences of pavement quality and other environmental factors on roadway safety.
+
+## Conclusion
+
+This analysis suggests that while PCI shows a statistically significant relationship with accident counts, its effect is weak and overshadowed by other factors. Even when accounting for weather and surface conditions, and allowing for nonlinear patterns, the explanatory power remains modest. The supplementary highway mileage visualization reinforces the notion that fundamental aspects like traffic volume, route usage, and driver behavior likely play more critical roles.
+
+In summary, PCI is not a strong standalone predictor of accident frequency, and a more holistic, data-rich approach is needed to fully understand and mitigate traffic accidents.

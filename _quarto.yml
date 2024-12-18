@@ -1,10 +1,14 @@
 project:
   type: website
+  output-dir: _site
   execute-dir: project
-  resources: scripts
-
+  resources: [
+    scripts,
+    dataset
+  ]
+    
 website:
-  title: "MA [46]15 Final Project"
+  title: "Road Real Talk: Crashes, Conditions, and Rescue"
   navbar:
     right:
       - about.qmd
@@ -15,6 +19,3 @@ format:
   html:
     theme: cosmo
     css: styles.css
-
-
-

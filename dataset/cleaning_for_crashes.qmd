@@ -1,0 +1,71 @@
+---
+title: Data
+description: We describe the sources of our data and the cleaning process.
+toc: true
+draft: false
+execute:
+  enabled: false
+---
+```{r}
+library(lubridate)
+library(dplyr)
+library(lubridate)
+library(skimr)
+```
+
+```{r}
+crash_df <- read.csv("dataset-ignore/Crash_Reporting_Drivers_Data.csv")
+
+# remove columns with a high percentage of missing values
+
+# Define threshold for column selection
+threshold <- 0.8
+
+# Remove columns with a high percentage of missing values
+data_clean <- crash_df |>
+  select_if(~ mean(is.na(.)) < threshold)
+# convert case number column to character format
+
+data_clean$Local.Case.Number <- as.character(data_clean$Local.Case.Number)
+
+# convert date and time column to datetime format
+
+data_clean$Crash.Date.Time <- mdy_hms(data_clean$Crash.Date.Time)
+
+
+# fill missing values in route type column with the most common value
+
+most_common_route <- data_clean$Route_Type |> 
+
+  na.omit() |>
+
+  table() |> 
+
+  which.max()
+
+
+
+data_clean$Route_Type[is.na(data_clean$Route_Type)] <- names(most_common_route)
+
+
+
+# remove duplicate rows
+
+data_clean <- data_clean |> distinct()
+
+subset_data <- data_clean %>%
+  slice(1:1000) # Adjust based on your requirements
+
+```
+
+
+
+```{r rds}
+
+# check the summary of cleaned data
+
+summary(data_clean)
+
+saveRDS(subset_data,"dataset/cleaned_dataset.rds")
+
+```

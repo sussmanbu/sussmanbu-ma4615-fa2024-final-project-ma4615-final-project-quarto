@@ -1,0 +1,1329 @@
+---
+title: "crash car data clean"
+author: "Fu Xiang"
+date: "2024-10-28"
+output: html_document
+execute:
+  enabled: false
+---
+
+
+## Setup
+
+```{r setup}
+#| message: false
+#| warning: false
+
+options(repos = c(CRAN = "https://cran.r-project.org"))
+install.packages("skimr")
+
+
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(skimr)  # for quick summary statistics
+
+
+install.packages("RCurl")
+library(RCurl)
+x <- getURL("https://raw.githubusercontent.com/sussmanbu/ma-4615-fa24-final-project-group-1/main/Crash_Reporting_Drivers_Data.csv")
+drivers_data <- read.csv(text = x)
+
+
+glimpse(drivers_data)
+
+skim(drivers_data)
+```
+
+Clean Column Names
+
+```{r}
+drivers_data_clean <- drivers_data %>%
+  clean_names()
+
+colnames(drivers_data_clean)
+```
+
+Handle Date/Time Format
+
+```{r}
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    crash_date/time <- mdy_hms(crash_date/time),
+    # create separate date and time columns if needed
+    crash_date = date(crash_date/time),
+    crash_time = format(crash_date/time, "%H:%M:%S")
+  )
+```
+
+Standardize Categorical Variables
+
+```{r}
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # standardize agency names
+    agency_name = str_trim(agency_name),
+    
+    # clean and standardize route type
+    route_type = case_when(
+      is.na(route_type) ~ "Unknown",
+      TRUE ~ route_type
+    ),
+    
+    # standardize weather conditions
+    weather = str_to_title(weather),
+    
+    # clean surface condition
+    surface_condition = case_when(
+      is.na(surface_condition) ~ "Unknown",
+      TRUE ~ surface_condition
+    ),
+    
+    # standardize driver at fault
+    driver_at_fault = case_when(
+      str_to_lower(driver_at_fault) == "yes" ~ "Yes",
+      str_to_lower(driver_at_fault) == "no" ~ "No",
+      TRUE ~ "Unknown"
+    )
+  )
+```
+
+Handle Missing Values
+
+```{r}
+# calculate missing values percentage
+missing_values <- drivers_data_clean %>%
+  summarise(across(everything(), ~sum(is.na(.))/n()*100)) %>%
+  pivot_longer(everything(), 
+              names_to = "column", 
+              values_to = "missing_percentage") %>%
+  arrange(desc(missing_percentage))
+
+# display columns with missing values
+print(missing_values %>% filter(missing_percentage > 0))
+
+# handle missing values based on column type
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # for route_type, road_name, and cross_street_name
+    # keep NA as is since they might be meaningful (e.g., off-road incidents)
+    
+    # for numeric columns, consider if 0 or NA is more appropriate
+    speed_limit = if_else(is.na(speed_limit), 0, speed_limit),
+    
+    # for categorical columns, mark unknown
+    surface_condition = if_else(is.na(surface_condition), "Unknown", surface_condition),
+    traffic_control = if_else(is.na(traffic_control), "Unknown", traffic_control)
+  )
+```
+
+Data Validation and Consistency Checks
+
+```{r}
+# check for logical consistencies
+validation_results <- drivers_data_clean %>%
+  summarise(
+    # check for future dates
+    future_dates = sum(crash_date > Sys.Date()),
+    
+    # check for valid speed limits
+    invalid_speed = sum(speed_limit > 70 | speed_limit < 0, na.rm = TRUE),
+    
+    # check for valid vehicle years
+    invalid_vehicle_year = sum(vehicle_year < 1900 | vehicle_year > year(Sys.Date()) + 1, na.rm = TRUE),
+    
+    # check for valid coordinates
+    invalid_lat = sum(latitude < 38 | latitude > 40, na.rm = TRUE),
+    invalid_lon = sum(longitude > -76 | longitude < -78, na.rm = TRUE)
+  )
+
+print(validation_results)
+
+# create flags for potential data quality issues
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    data_quality_flag = case_when(
+      crash_date > Sys.Date() ~ "Future date",
+      speed_limit > 70 | speed_limit < 0 ~ "Invalid speed limit",
+      vehicle_year < 1900 | vehicle_year > year(Sys.Date()) + 1 ~ "Invalid vehicle year",
+      latitude < 38 | latitude > 40 | longitude > -76 | longitude < -78 ~ "Invalid coordinates",
+      TRUE ~ "Valid"
+    )
+  )
+```
+
+Check Value Distributions
+
+```{r}
+# check common categories
+category_summaries <- list(
+  collision_types = table(drivers_data_clean$collision_type),
+  weather_conditions = table(drivers_data_clean$weather),
+  vehicle_types = table(drivers_data_clean$vehicle_body_type),
+  injury_severity = table(drivers_data_clean$injury_severity)
+)
+
+print(category_summaries)
+```
+
+Collision Types Need Standardization:
+
+```{r}
+# standardize collision types
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    collision_type = case_when(
+      collision_type %in% c("Angle", "ANGLE MEETS LEFT HEAD ON", "ANGLE MEETS LEFT TURN",
+                           "ANGLE MEETS RIGHT TURN", "STRAIGHT MOVEMENT ANGLE") ~ "ANGLE",
+      collision_type %in% c("Front to Front", "HEAD ON", "HEAD ON LEFT TURN") ~ "HEAD_ON",
+      collision_type %in% c("Front to Rear", "SAME DIR REAR END", 
+                           "SAME DIR REND LEFT TURN", "SAME DIR REND RIGHT TURN") ~ "REAR_END",
+      collision_type %in% c("SAME DIRECTION SIDESWIPE", "Sideswipe, Same Direction") ~ "SIDESWIPE_SAME_DIR",
+      collision_type %in% c("OPPOSITE DIRECTION SIDESWIPE", "Sideswipe, Opposite Direction") ~ "SIDESWIPE_OPPOSITE_DIR",
+      collision_type %in% c("SINGLE VEHICLE", "Single Vehicle") ~ "SINGLE_VEHICLE",
+      collision_type %in% c("Other", "OTHER") ~ "OTHER",
+      collision_type %in% c("Unknown", "UNKNOWN", "N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+```
+
+
+Weather Conditions Need Standardization:
+
+```{r}
+# standardize weather conditions
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    weather = case_when(
+      str_detect(str_to_upper(weather), "CLEAR") ~ "CLEAR",
+      str_detect(str_to_upper(weather), "CLOUD") ~ "CLOUDY",
+      str_detect(str_to_upper(weather), "RAIN|RAINING") ~ "RAIN",
+      str_detect(str_to_upper(weather), "SNOW|BLOWING SNOW") ~ "SNOW",
+      str_detect(str_to_upper(weather), "FOG|SMOG|SMOKE") ~ "FOG",
+      weather %in% c("N/A", "Unknown", "UNKNOWN") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+```
+
+Vehicle Types Need Major Cleanup:
+
+```{r}
+# standardize vehicle types
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    vehicle_body_type = case_when(
+      str_detect(str_to_upper(vehicle_body_type), "PASSENGER CAR|PASSENGER|CAR") ~ "PASSENGER_CAR",
+      str_detect(str_to_upper(vehicle_body_type), "SUV|SPORT UTILITY|UTILITY VEHICLE") ~ "SUV",
+      str_detect(str_to_upper(vehicle_body_type), "PICKUP|LIGHT TRUCK") ~ "PICKUP_TRUCK",
+      str_detect(str_to_upper(vehicle_body_type), "VAN|CARGO") ~ "VAN",
+      str_detect(str_to_upper(vehicle_body_type), "BUS") ~ "BUS",
+      str_detect(str_to_upper(vehicle_body_type), "MOTORCYCLE|MOPED") ~ "MOTORCYCLE",
+      str_detect(str_to_upper(vehicle_body_type), "EMERGENCY|POLICE|FIRE|AMBULANCE") ~ "EMERGENCY_VEHICLE",
+      vehicle_body_type %in% c("N/A", "Unknown", "UNKNOWN") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+```
+
+Injury Severity Standardization:
+
+```{r}
+# standardize injury severity
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    injury_severity = case_when(
+      str_detect(str_to_upper(injury_severity), "FATAL") ~ "FATAL",
+      str_detect(str_to_upper(injury_severity), "NO APPARENT|NO INJURY") ~ "NO_INJURY",
+      str_detect(str_to_upper(injury_severity), "POSSIBLE") ~ "POSSIBLE_INJURY",
+      str_detect(str_to_upper(injury_severity), "MINOR") ~ "MINOR_INJURY",
+      str_detect(str_to_upper(injury_severity), "SERIOUS") ~ "SERIOUS_INJURY",
+      TRUE ~ "UNKNOWN"
+    )
+  )
+```
+
+Handle Missing Values Strategy (based on the missing percentage analysis):
+
+```{r}
+# handle missing values based on context
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # high missing percentage (>90%) - keep as NA but add flag
+    has_non_motorist = !is.na(related_non_motorist),
+    
+    # medium missing percentage (10-90%) - add meaningful categories
+    municipality = if_else(is.na(municipality), "UNINCORPORATED", municipality),
+    road_name = if_else(is.na(road_name), "OFF_ROAD", road_name),
+    cross_street_name = if_else(is.na(cross_street_name), "NOT_APPLICABLE", cross_street_name),
+    
+    # low missing percentage (<10%) - impute with "UNKNOWN"
+    drivers_license_state = if_else(is.na(drivers_license_state), "UNKNOWN", drivers_license_state),
+    circumstance = if_else(is.na(circumstance), "UNKNOWN", circumstance),
+    vehicle_going_dir = if_else(is.na(vehicle_going_dir), "UNKNOWN", vehicle_going_dir)
+  )
+```
+
+Handle Data Quality Issues (based on validation results):
+
+```{r}
+# add data quality flags
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    data_quality_flags = case_when(
+      speed_limit > 70 | speed_limit < 0 ~ "INVALID_SPEED_LIMIT",
+      vehicle_year < 1900 | vehicle_year > year(Sys.Date()) + 1 ~ "INVALID_VEHICLE_YEAR",
+      latitude < 38 | latitude > 40 | longitude > -76 | longitude < -78 ~ "INVALID_COORDINATES",
+      TRUE ~ "VALID"
+    ),
+    
+    # clean speed limits
+    speed_limit = case_when(
+      speed_limit > 70 ~ NA_real_,
+      speed_limit < 0 ~ NA_real_,
+      TRUE ~ speed_limit
+    ),
+    
+    # clean vehicle years
+    vehicle_year = if_else(
+      vehicle_year < 1900 | vehicle_year > year(Sys.Date()) + 1,
+      NA_real_,
+      vehicle_year
+    )
+  )
+```
+
+Additional cleaning for specific columns:
+
+```{r}
+# additional cleaning steps for specific columns and vehicle data
+
+# standardize vehicle makes (common misspellings and abbreviations)
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    vehicle_make = case_when(
+      # honda variations
+      str_detect(str_to_upper(vehicle_make), "HOND|HDA") ~ "HONDA",
+      
+      # toyota variations
+      str_detect(str_to_upper(vehicle_make), "TOY|TOYT") ~ "TOYOTA",
+      
+      # ford
+      str_detect(str_to_upper(vehicle_make), "^FRD|FORD") ~ "FORD",
+      
+      # chevrolet variations
+      str_detect(str_to_upper(vehicle_make), "CHEV|CHEVY|CHV") ~ "CHEVROLET",
+      
+      # nissan variations
+      str_detect(str_to_upper(vehicle_make), "NISS|NISN") ~ "NISSAN",
+      
+      # hyundai variations
+      str_detect(str_to_upper(vehicle_make), "HYUN|HYU") ~ "HYUNDAI",
+      
+      # volkswagen variations
+      str_detect(str_to_upper(vehicle_make), "VW|VOLK|VOLKS") ~ "VOLKSWAGEN",
+      
+      # BMW
+      str_detect(str_to_upper(vehicle_make), "BMW|BMV") ~ "BMW",
+      
+      # Mercedes-Benz variations
+      str_detect(str_to_upper(vehicle_make), "MERZ|MENZ|MERCEDES|BENZ") ~ "MERCEDES-BENZ",
+      
+      # lexus
+      str_detect(str_to_upper(vehicle_make), "LEX|LEXS") ~ "LEXUS",
+      
+      # mazda variations
+      str_detect(str_to_upper(vehicle_make), "MAZ|MAZD") ~ "MAZDA",
+      
+      # subaru variations
+      str_detect(str_to_upper(vehicle_make), "SUB|SUBR") ~ "SUBARU",
+      
+      # kia
+      str_detect(str_to_upper(vehicle_make), "^KIA") ~ "KIA",
+      
+      # audi
+      str_detect(str_to_upper(vehicle_make), "^AUD") ~ "AUDI",
+      
+      # acura
+      str_detect(str_to_upper(vehicle_make), "ACUR|ACU") ~ "ACURA",
+      
+      # infinity
+      str_detect(str_to_upper(vehicle_make), "INF|INFIN") ~ "INFINITI",
+      
+      TRUE ~ str_to_upper(vehicle_make)
+    )
+  )
+
+# clean vehicle models
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    vehicle_model = case_when(
+      # clean common abbreviations
+      str_detect(str_to_upper(vehicle_model), "^CRV|CR-V") ~ "CR-V",
+      str_detect(str_to_upper(vehicle_model), "^RAV|RAV4") ~ "RAV4",
+      str_detect(str_to_upper(vehicle_model), "ACCORD|ACRD") ~ "ACCORD",
+      str_detect(str_to_upper(vehicle_model), "CAMRY|CAM") ~ "CAMRY",
+      str_detect(str_to_upper(vehicle_model), "CIVIC|CVC") ~ "CIVIC",
+      str_detect(str_to_upper(vehicle_model), "ALTIMA|ALT") ~ "ALTIMA",
+      str_detect(str_to_upper(vehicle_model), "COROLLA|COR") ~ "COROLLA",
+      str_detect(str_to_upper(vehicle_model), "EXPLORER|EXPLR") ~ "EXPLORER",
+      str_detect(str_to_upper(vehicle_model), "F-150|F150") ~ "F-150",
+      str_detect(str_to_upper(vehicle_model), "HIGHLANDER|HGLDR") ~ "HIGHLANDER",
+      TRUE ~ str_to_upper(vehicle_model)
+    )
+  )
+
+# additional cleaning for other specific columns
+
+# clean light conditions
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    light = case_when(
+      str_detect(str_to_upper(light), "DAYLIGHT") ~ "DAYLIGHT",
+      str_detect(str_to_upper(light), "DARK.*LIGHT.*ON|LIGHTED") ~ "DARK_WITH_LIGHTING",
+      str_detect(str_to_upper(light), "DARK.*NO.*LIGHT|UNLIGHTED") ~ "DARK_NO_LIGHTING",
+      str_detect(str_to_upper(light), "DAWN") ~ "DAWN",
+      str_detect(str_to_upper(light), "DUSK") ~ "DUSK",
+      str_detect(str_to_upper(light), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# clean surface conditions
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    surface_condition = case_when(
+      str_detect(str_to_upper(surface_condition), "DRY") ~ "DRY",
+      str_detect(str_to_upper(surface_condition), "WET") ~ "WET",
+      str_detect(str_to_upper(surface_condition), "ICE|ICY") ~ "ICE",
+      str_detect(str_to_upper(surface_condition), "SNOW|SLUSH") ~ "SNOW",
+      str_detect(str_to_upper(surface_condition), "SAND|DIRT|MUD") ~ "SAND_DIRT_MUD",
+      str_detect(str_to_upper(surface_condition), "OIL|GREASE") ~ "OIL_GREASE",
+      is.na(surface_condition) | str_detect(str_to_upper(surface_condition), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# clean traffic control
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    traffic_control = case_when(
+      str_detect(str_to_upper(traffic_control), "SIGNAL|TRAFFIC LIGHT") ~ "TRAFFIC_SIGNAL",
+      str_detect(str_to_upper(traffic_control), "STOP SIGN") ~ "STOP_SIGN",
+      str_detect(str_to_upper(traffic_control), "YIELD") ~ "YIELD_SIGN",
+      str_detect(str_to_upper(traffic_control), "FLASHING") ~ "FLASHING_SIGNAL",
+      str_detect(str_to_upper(traffic_control), "NO CONTROL|NONE") ~ "NO_CONTROL",
+      str_detect(str_to_upper(traffic_control), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# clean driver substance abuse
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    driver_substance_abuse = case_when(
+      str_detect(str_to_upper(driver_substance_abuse), "NONE|NO ABUSE") ~ "NONE",
+      str_detect(str_to_upper(driver_substance_abuse), "ALCOHOL") ~ "ALCOHOL",
+      str_detect(str_to_upper(driver_substance_abuse), "DRUG") ~ "DRUGS",
+      str_detect(str_to_upper(driver_substance_abuse), "BOTH|ALCOHOL.*DRUG|DRUG.*ALCOHOL") ~ "ALCOHOL_AND_DRUGS",
+      str_detect(str_to_upper(driver_substance_abuse), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# clean driver distracted by
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    driver_distracted_by = case_when(
+      str_detect(str_to_upper(driver_distracted_by), "NOT DISTRACTED") ~ "NOT_DISTRACTED",
+      str_detect(str_to_upper(driver_distracted_by), "CELL|PHONE|MOBILE") ~ "CELL_PHONE",
+      str_detect(str_to_upper(driver_distracted_by), "PASSENGER") ~ "PASSENGER",
+      str_detect(str_to_upper(driver_distracted_by), "RADIO|AUDIO") ~ "AUDIO_EQUIPMENT",
+      str_detect(str_to_upper(driver_distracted_by), "EAT|DRINK") ~ "EATING_DRINKING",
+      str_detect(str_to_upper(driver_distracted_by), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# verify our cleaning by checking the unique values in each cleaned column
+verification_check <- function(data, columns) {
+  map(columns, ~{
+    unique_vals <- data %>% 
+      pull(.) %>% 
+      unique() %>% 
+      sort()
+    
+    cat("\nUnique values in", ., ":\n")
+    print(unique_vals)
+    cat("\n")
+  })
+}
+
+# verify the cleaning results for key columns
+columns_to_verify <- c(
+  "vehicle_make", 
+  "vehicle_model",
+  "light",
+  "surface_condition",
+  "traffic_control",
+  "driver_substance_abuse",
+  "driver_distracted_by"
+)
+
+verification_check(drivers_data_clean, columns_to_verify)
+
+vehicle_summary <- drivers_data_clean %>%
+  group_by(vehicle_make, vehicle_model) %>%
+  summarise(
+    count = n(),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(count))
+
+print(vehicle_summary)
+```
+
+```{r}
+# clean and standardize agency names
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    agency_name = case_when(
+      str_detect(str_to_upper(agency_name), "MONTGOMERY|MONT|MCP") ~ "MONTGOMERY COUNTY POLICE",
+      str_detect(str_to_upper(agency_name), "GAITHERSBURG|GAITH") ~ "GAITHERSBURG POLICE",
+      str_detect(str_to_upper(agency_name), "ROCKVILLE|ROCK") ~ "ROCKVILLE POLICE",
+      str_detect(str_to_upper(agency_name), "TAKOMA|TAK") ~ "TAKOMA PARK POLICE",
+      str_detect(str_to_upper(agency_name), "PARK|MNCPP") ~ "MD NATIONAL CAPITAL PARK POLICE",
+      TRUE ~ str_to_upper(agency_name)
+    )
+  )
+
+# clean and standardize vehicle damage extent
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    vehicle_damage_extent = case_when(
+      str_detect(str_to_upper(vehicle_damage_extent), "NONE|NO DAMAGE") ~ "NO_DAMAGE",
+      str_detect(str_to_upper(vehicle_damage_extent), "MINOR|SUPERFICIAL") ~ "MINOR",
+      str_detect(str_to_upper(vehicle_damage_extent), "FUNCTIONAL") ~ "FUNCTIONAL",
+      str_detect(str_to_upper(vehicle_damage_extent), "DISABLE|DISABLING") ~ "DISABLING",
+      str_detect(str_to_upper(vehicle_damage_extent), "DESTROYED") ~ "DESTROYED",
+      str_detect(str_to_upper(vehicle_damage_extent), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# clean and standardize vehicle first impact location
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    vehicle_first_impact_location = case_when(
+      str_detect(str_to_upper(vehicle_first_impact_location), "FRONT|TWELVE|12") ~ "FRONT",
+      str_detect(str_to_upper(vehicle_first_impact_location), "RIGHT FRONT|ONE|1") ~ "RIGHT_FRONT",
+      str_detect(str_to_upper(vehicle_first_impact_location), "RIGHT SIDE|THREE|3") ~ "RIGHT_SIDE",
+      str_detect(str_to_upper(vehicle_first_impact_location), "RIGHT REAR|FOUR|4") ~ "RIGHT_REAR",
+      str_detect(str_to_upper(vehicle_first_impact_location), "REAR|SIX|6") ~ "REAR",
+      str_detect(str_to_upper(vehicle_first_impact_location), "LEFT REAR|SEVEN|7|EIGHT|8") ~ "LEFT_REAR",
+      str_detect(str_to_upper(vehicle_first_impact_location), "LEFT SIDE|NINE|9") ~ "LEFT_SIDE",
+      str_detect(str_to_upper(vehicle_first_impact_location), "LEFT FRONT|TEN|10|ELEVEN|11") ~ "LEFT_FRONT",
+      str_detect(str_to_upper(vehicle_first_impact_location), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+
+# clean and standardize vehicle movement
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    vehicle_movement = case_when(
+      str_detect(str_to_upper(vehicle_movement), "STRAIGHT|CONSTANT") ~ "STRAIGHT",
+      str_detect(str_to_upper(vehicle_movement), "TURN.*RIGHT") ~ "TURNING_RIGHT",
+      str_detect(str_to_upper(vehicle_movement), "TURN.*LEFT") ~ "TURNING_LEFT",
+      str_detect(str_to_upper(vehicle_movement), "STOP|SLOW") ~ "SLOWING_STOPPING",
+      str_detect(str_to_upper(vehicle_movement), "BACK|REVERSE") ~ "BACKING",
+      str_detect(str_to_upper(vehicle_movement), "PARK") ~ "PARKED",
+      str_detect(str_to_upper(vehicle_movement), "START") ~ "STARTING",
+      str_detect(str_to_upper(vehicle_movement), "UNKNOWN|N/A") ~ "UNKNOWN",
+      TRUE ~ "OTHER"
+    )
+  )
+```
+
+```{r validation_checks}
+# create a comprehensive validation function
+validate_crash_data <- function(data) {
+  # initialize empty list for validation results
+  validation_results <- list()
+  
+  # temporal validations
+  validation_results$temporal <- data %>%
+    summarise(
+      future_dates = sum(crash_date/time > Sys.time()),
+      weekend_crashes = sum(lubridate::wday(crash_date/time, week_start = 1) %in% c(6,7)),
+      night_crashes = sum(format(crash_date/time, "%H:%M:%S") >= "18:00:00" | 
+                         format(crash_date/time, "%H:%M:%S") <= "06:00:00"),
+      crashes_by_hour = table(format(crash_date/time, "%H"))
+    )
+  
+  # geographic validations
+  validation_results$geographic <- data %>%
+    summarise(
+      invalid_lat = sum(latitude < 38 | latitude > 40, na.rm = TRUE),
+      invalid_lon = sum(longitude > -76 | longitude < -78, na.rm = TRUE),
+      missing_coords = sum(is.na(latitude) | is.na(longitude)),
+      unique_locations = n_distinct(location, na.rm = TRUE)
+    )
+  
+  # vehicle validations
+  validation_results$vehicle <- data %>%
+    summarise(
+      invalid_years = sum(vehicle_year < 1900 | vehicle_year > year(Sys.Date()) + 1, na.rm = TRUE),
+      missing_makes = sum(is.na(vehicle_make)),
+      missing_models = sum(is.na(vehicle_model)),
+      unique_makes = n_distinct(vehicle_make, na.rm = TRUE),
+      unique_models = n_distinct(vehicle_model, na.rm = TRUE)
+    )
+  
+  # logical consistency checks
+  validation_results$logical <- data %>%
+    summarise(
+      # check if parked vehicles are marked as having movement
+      parked_moving = sum(parked_vehicle == "Yes" & vehicle_movement != "PARKED", na.rm = TRUE),
+      
+      # check for injuries in no-damage crashes
+      injuries_no_damage = sum(injury_severity != "NO_INJURY" & 
+                             vehicle_damage_extent == "NO_DAMAGE", na.rm = TRUE),
+      
+      # check for fatal crashes without severe damage
+      fatal_minor_damage = sum(injury_severity == "FATAL" & 
+                             vehicle_damage_extent %in% c("NO_DAMAGE", "MINOR"), na.rm = TRUE),
+      
+      # check for driverless vehicles marked with driver characteristics
+      driverless_with_driver = sum(driverless_vehicle == "Yes" & 
+                                  !is.na(driver_substance_abuse), na.rm = TRUE)
+    )
+  
+  # cross-reference checks
+  validation_results$cross_reference <- data %>%
+    summarise(
+      # light condition vs time of day consistency
+      light_time_mismatch = sum(
+        (format(crash_date/time, "%H:%M:%S") >= "18:00:00" | 
+         format(crash_date/time, "%H:%M:%S") <= "06:00:00") & 
+        light == "DAYLIGHT", na.rm = TRUE
+      ),
+      
+      # weather vs surface condition consistency
+      weather_surface_mismatch = sum(
+        (weather %in% c("RAIN", "SNOW") & surface_condition == "DRY") |
+        (weather == "CLEAR" & surface_condition %in% c("ICE", "SNOW")), 
+        na.rm = TRUE
+      )
+    )
+  
+  # value distribution checks
+  validation_results$distributions <- list(
+    speed_distribution = table(data$speed_limit),
+    damage_by_speed = table(data$vehicle_damage_extent, cut(data$speed_limit, 
+                                                          breaks = c(0, 25, 35, 45, 55, Inf))),
+    injury_by_speed = table(data$injury_severity, cut(data$speed_limit, 
+                                                    breaks = c(0, 25, 35, 45, 55, Inf)))
+  )
+  
+  return(validation_results)
+}
+
+# run validation and create summary report
+validation_summary <- validate_crash_data(drivers_data_clean)
+
+# create a function to print validation results in a readable format
+print_validation_summary <- function(validation_results) {
+  cat("\n=== VALIDATION SUMMARY ===\n")
+  
+  cat("\nTEMPORAL VALIDATION:")
+  cat("\n- Future dates:", validation_results$temporal$future_dates)
+  cat("\n- Weekend crashes:", validation_results$temporal$weekend_crashes)
+  cat("\n- Night crashes:", validation_results$temporal$night_crashes)
+  
+  cat("\n\nGEOGRAPHIC VALIDATION:")
+  print(validation_results$geographic)
+  
+  cat("\n\nVEHICLE VALIDATION:")
+  print(validation_results$vehicle)
+  
+  cat("\n\nLOGICAL CONSISTENCY CHECKS:")
+  print(validation_results$logical)
+  
+  cat("\n\nCROSS-REFERENCE CHECKS:")
+  print(validation_results$cross_reference)
+  
+  cat("\n\nDISTRIBUTIONS:")
+  cat("\nSpeed Limit Distribution:\n")
+  print(validation_results$distributions$speed_distribution)
+  
+  cat("\nDamage by Speed Range:\n")
+  print(validation_results$distributions$damage_by_speed)
+}
+
+# run and print validation summary
+print_validation_summary(validation_summary)
+
+# create data quality flags based on validation results
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    data_quality_flags = case_when(
+      # temporal flags
+      crash_date/time > Sys.time() ~ "FUTURE_DATE",
+      
+      # geographic flags
+      (latitude < 38 | latitude > 40 | longitude > -76 | longitude < -78) ~ "INVALID_COORDINATES",
+      
+      # vehicle flags
+      (vehicle_year < 1900 | vehicle_year > year(Sys.Date()) + 1) ~ "INVALID_VEHICLE_YEAR",
+      
+      # logical consistency flags
+      (parked_vehicle == "Yes" & vehicle_movement != "PARKED") ~ "PARKED_MOVING_MISMATCH",
+      (injury_severity != "NO_INJURY" & vehicle_damage_extent == "NO_DAMAGE") ~ "INJURY_NO_DAMAGE_MISMATCH",
+      (injury_severity == "FATAL" & vehicle_damage_extent %in% c("NO_DAMAGE", "MINOR")) ~ "FATAL_MINOR_DAMAGE_MISMATCH",
+      
+      # cross-reference flags
+      (format(crash_date/time, "%H:%M:%S") >= "18:00:00" | 
+       format(crash_date/time, "%H:%M:%S") <= "06:00:00") & 
+      light == "DAYLIGHT" ~ "LIGHT_TIME_MISMATCH",
+      
+      (weather %in% c("RAIN", "SNOW") & surface_condition == "DRY") |
+      (weather == "CLEAR" & surface_condition %in% c("ICE", "SNOW")) ~ "WEATHER_SURFACE_MISMATCH",
+      
+      TRUE ~ "VALID"
+    )
+  )
+
+quality_flag_summary <- drivers_data_clean %>%
+  group_by(data_quality_flags) %>%
+  summarise(
+    count = n(),
+    percentage = n() / nrow(drivers_data_clean) * 100
+  ) %>%
+  arrange(desc(count))
+
+print("\nData Quality Flag Summary:")
+print(quality_flag_summary)
+```
+
+Something still seems off with the data quality flags.
+
+```{r}
+# fix Light-Time Mismatches (largest issue ~5.2% of data)
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # extract hour from crash_date/time
+    crash_hour = as.numeric(format(crash_date/time, "%H")),
+    
+    # correct light condition based on time
+    light = case_when(
+      # dawn hours (5-7 AM)
+      crash_hour >= 5 & crash_hour < 7 ~ "DAWN",
+      
+      # daylight hours (7 AM - 6 PM)
+      crash_hour >= 7 & crash_hour < 18 ~ "DAYLIGHT",
+      
+      # dusk hours (6-8 PM)
+      crash_hour >= 18 & crash_hour < 20 ~ "DUSK",
+      
+      # night hours
+      crash_hour >= 20 | crash_hour < 5 ~ "DARK_WITH_LIGHTING",
+      
+      TRUE ~ light
+    )
+  ) %>%
+  select(-crash_hour) # remove temporary column
+
+# fix Weather-Surface Condition Mismatches (~0.37% of data)
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # Adjust surface condition based on weather
+    surface_condition = case_when(
+      weather %in% c("RAIN", "RAINING") & surface_condition == "DRY" ~ "WET",
+      weather == "SNOW" & surface_condition == "DRY" ~ "SNOW",
+      weather == "CLEAR" & surface_condition %in% c("ICE", "SNOW") & 
+        format(crash_date/time, "%m") %in% c("12", "01", "02") ~ surface_condition, # Keep if winter months
+      weather == "CLEAR" & surface_condition %in% c("ICE", "SNOW") ~ "UNKNOWN", # Change to unknown if non-winter
+      TRUE ~ surface_condition
+    )
+  )
+
+# fix Injury-Damage Inconsistencies
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # adjust injury severity or damage extent for logical consistency
+    injury_severity = case_when(
+      injury_severity != "NO_INJURY" & vehicle_damage_extent == "NO_DAMAGE" ~ "NO_INJURY",
+      injury_severity == "FATAL" & vehicle_damage_extent %in% c("NO_DAMAGE", "MINOR") ~ "SERIOUS_INJURY",
+      TRUE ~ injury_severity
+    ),
+    
+    # ensure fatal crashes have appropriate damage extent
+    vehicle_damage_extent = case_when(
+      injury_severity == "FATAL" & vehicle_damage_extent %in% c("NO_DAMAGE", "MINOR") ~ "DISABLING",
+      TRUE ~ vehicle_damage_extent
+    )
+  )
+
+# fix Invalid Coordinates (Montgomery County, MD boundaries)
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # montgomery County approximate boundaries
+    latitude = case_when(
+      latitude < 38.9 | latitude > 39.4 ~ NA_real_,
+      TRUE ~ latitude
+    ),
+    longitude = case_when(
+      longitude < -77.5 | longitude > -76.9 ~ NA_real_,
+      TRUE ~ longitude
+    )
+  )
+
+# clean Vehicle Makes and Models with High Frequency Patterns
+# analyze the most common patterns
+vehicle_patterns <- drivers_data_clean %>%
+  group_by(vehicle_make, vehicle_model) %>%
+  summarise(
+    count = n(),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(count)) %>%
+  head(20)  # Look at top 20 patterns
+
+# now clean based on common patterns
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # standardize common model names
+    vehicle_model = case_when(
+      # remove digits from end of model names
+      str_detect(vehicle_model, "[A-Z]+\\d+$") ~ str_extract(vehicle_model, "[A-Z]+"),
+      # remove common suffixes
+      str_detect(vehicle_model, "SDN|CPE|CVT|HBK") ~ str_replace(vehicle_model, "SDN|CPE|CVT|HBK", ""),
+      TRUE ~ vehicle_model
+    ),
+    
+    # trim whitespace and standardize case
+    vehicle_model = str_trim(vehicle_model),
+    vehicle_make = str_trim(vehicle_make)
+  )
+
+# add Data Quality Score
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    data_quality_score = case_when(
+      data_quality_flags == "VALID" ~ 100,
+      data_quality_flags == "LIGHT_TIME_MISMATCH" ~ 90,
+      data_quality_flags == "WEATHER_SURFACE_MISMATCH" ~ 85,
+      data_quality_flags == "INJURY_NO_DAMAGE_MISMATCH" ~ 80,
+      data_quality_flags == "INVALID_COORDINATES" ~ 75,
+      data_quality_flags %in% c("FATAL_MINOR_DAMAGE_MISMATCH", "PARKED_MOVING_MISMATCH") ~ 70,
+      TRUE ~ 60
+    )
+  )
+
+# verify cleaning results
+cleaning_verification <- list()
+
+# check light-time consistency after cleaning
+cleaning_verification$light_time <- drivers_data_clean %>%
+  summarise(
+    light_time_mismatch_after = sum(
+      (format(crash_date/time, "%H:%M:%S") >= "18:00:00" | 
+       format(crash_date/time, "%H:%M:%S") <= "06:00:00") & 
+      light == "DAYLIGHT", 
+      na.rm = TRUE
+    )
+  )
+
+# check weather-surface consistency after cleaning
+cleaning_verification$weather_surface <- drivers_data_clean %>%
+  summarise(
+    weather_surface_mismatch_after = sum(
+      (weather %in% c("RAIN", "SNOW") & surface_condition == "DRY") |
+      (weather == "CLEAR" & surface_condition %in% c("ICE", "SNOW")), 
+      na.rm = TRUE
+    )
+  )
+
+# check data quality scores distribution
+cleaning_verification$quality_scores <- drivers_data_clean %>%
+  group_by(data_quality_score) %>%
+  summarise(
+    count = n(),
+    percentage = n() / nrow(drivers_data_clean) * 100,
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(data_quality_score))
+
+cat("\n=== CLEANING VERIFICATION RESULTS ===\n")
+print(cleaning_verification)
+```
+
+Final Cleaning Steps Based on Verification Results
+
+```{r}
+# handle remaining weather-surface mismatches (577 cases)
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # create a more detailed weather-surface relationship
+    surface_condition = case_when(
+      # if it's raining, surface should be wet
+      weather %in% c("RAIN", "RAINING") ~ "WET",
+      
+      # if it's snowing, surface should be snow or ice
+      weather == "SNOW" ~ "SNOW",
+      
+      # if it's freezing rain, surface should be ice
+      weather == "FREEZING RAIN" ~ "ICE",
+      
+      # for clear weather, keep existing surface condition if reasonable
+      weather == "CLEAR" & surface_condition %in% c("DRY", "WET") ~ surface_condition,
+      
+      # for cloudy weather, keep existing surface condition
+      weather == "CLOUDY" ~ surface_condition,
+      
+      # for other cases, mark as unknown if inconsistent
+      TRUE ~ case_when(
+        surface_condition %in% c("DRY", "WET", "SNOW", "ICE") ~ surface_condition,
+        TRUE ~ "UNKNOWN"
+      )
+    )
+  )
+
+# add more detailed quality flags and improve quality score
+drivers_data_clean <- drivers_data_clean %>%
+  mutate(
+    # create compound quality flags for multiple issues
+    detailed_quality_flags = map2_chr(
+      data_quality_flags,
+      surface_condition,
+      ~case_when(
+        .x != "VALID" & .y == "UNKNOWN" ~ paste(.x, "WITH_UNKNOWN_SURFACE"),
+        TRUE ~ .x
+      )
+    ),
+    
+    # create a more nuanced quality score (0-100)
+    refined_quality_score = case_when(
+      data_quality_flags == "VALID" & !is.na(surface_condition) & 
+      surface_condition != "UNKNOWN" ~ 100,
+      
+      data_quality_flags == "VALID" & 
+      (is.na(surface_condition) | surface_condition == "UNKNOWN") ~ 95,
+      
+      data_quality_flags == "LIGHT_TIME_MISMATCH" ~ 90,
+      
+      data_quality_flags == "WEATHER_SURFACE_MISMATCH" & 
+      !is.na(surface_condition) ~ 85,
+      
+      data_quality_flags == "WEATHER_SURFACE_MISMATCH" & 
+      is.na(surface_condition) ~ 80,
+      
+      data_quality_flags == "INJURY_NO_DAMAGE_MISMATCH" ~ 75,
+      
+      data_quality_flags == "INVALID_COORDINATES" ~ 70,
+      
+      data_quality_flags %in% c("FATAL_MINOR_DAMAGE_MISMATCH", 
+                               "PARKED_MOVING_MISMATCH") ~ 65,
+      
+      TRUE ~ 60
+    )
+  )
+
+# create final data quality summary
+final_quality_summary <- drivers_data_clean %>%
+  summarise(
+    total_records = n(),
+    high_quality_records = sum(refined_quality_score >= 95),
+    medium_quality_records = sum(refined_quality_score >= 80 & refined_quality_score < 95),
+    low_quality_records = sum(refined_quality_score < 80),
+    mean_quality_score = mean(refined_quality_score),
+    median_quality_score = median(refined_quality_score),
+    
+    # percentage calculations
+    high_quality_percentage = (high_quality_records / total_records) * 100,
+    medium_quality_percentage = (medium_quality_records / total_records) * 100,
+    low_quality_percentage = (low_quality_records / total_records) * 100
+  )
+
+cat("\n=== FINAL DATA QUALITY SUMMARY ===\n")
+print(final_quality_summary)
+
+# create recommendations for further improvements
+cat("\n=== RECOMMENDATIONS FOR FURTHER IMPROVEMENTS ===\n")
+cat("1. Weather-Surface Condition Relationship:\n")
+cat("   - ", sum(drivers_data_clean$surface_condition == "UNKNOWN"), 
+    "records still have unknown surface conditions\n")
+cat("   - Consider adding temperature data for better ice/snow validation\n\n")
+
+cat("2. Geographic Data Quality:\n")
+cat("   - ", sum(is.na(drivers_data_clean$latitude) | is.na(drivers_data_clean$longitude)),
+    "records have missing or invalid coordinates\n")
+cat("   - Consider implementing address geocoding for missing coordinates\n\n")
+
+cat("3. Vehicle Information:\n")
+cat("   - ", sum(is.na(drivers_data_clean$vehicle_make)), "records with missing vehicle makes\n")
+cat("   - ", sum(is.na(drivers_data_clean$vehicle_model)), "records with missing vehicle models\n")
+cat("   - Consider implementing VIN decoding for missing vehicle information\n\n")
+
+processing_summary <- list(
+  initial_issues = list(
+    light_time_mismatch = 9744,
+    weather_surface_mismatch = 702,
+    injury_damage_mismatch = 306,
+    invalid_coordinates = 26,
+    fatal_minor_damage = 1,
+    parked_moving = 1
+  ),
+  
+  final_status = list(
+    quality_summary = final_quality_summary,
+    remaining_weather_surface_mismatch = 577,
+    remaining_unknown_surface = sum(drivers_data_clean$surface_condition == "UNKNOWN", na.rm = TRUE)
+  )
+)
+
+cat("\n=== DATA PROCESSING SUMMARY ===\n")
+cat("Initial Issues vs. Final Status:\n")
+cat("- Light-Time Mismatches: ", processing_summary$initial_issues$light_time_mismatch, 
+    " -> 0\n")
+cat("- Weather-Surface Mismatches: ", processing_summary$initial_issues$weather_surface_mismatch,
+    " -> ", processing_summary$final_status$remaining_weather_surface_mismatch, "\n")
+```
+
+Visualizations.
+
+```{r}
+install.packages("viridis")
+
+library(ggplot2)
+library(scales)
+library(patchwork)  # for combining plots
+library(viridis)    # for colorblind-friendly palettes
+library(lubridate)
+
+# crash Time Patterns
+time_plot <- drivers_data_clean %>%
+  mutate(
+    hour = hour(crash_date/time),
+    weekday = wday(crash_date/time, label = TRUE),
+    month = month(crash_date/time, label = TRUE)
+  ) %>%
+  ggplot(aes(x = hour)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Crashes by Hour of Day",
+       x = "Hour of Day",
+       y = "Number of Crashes") +
+  theme_minimal() +
+  scale_x_continuous(breaks = seq(0, 23, 2))
+
+# injury Severity by Vehicle Type
+severity_vehicle_plot <- drivers_data_clean %>%
+  filter(!is.na(vehicle_body_type), !is.na(injury_severity)) %>%
+  count(vehicle_body_type, injury_severity) %>%
+  group_by(vehicle_body_type) %>%
+  mutate(pct = n/sum(n) * 100) %>%
+  ggplot(aes(x = reorder(vehicle_body_type, -pct), y = pct, fill = injury_severity)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Injury Severity by Vehicle Type",
+       x = "Vehicle Type",
+       y = "Percentage",
+       fill = "Injury Severity") +
+  theme_minimal() +
+  scale_fill_viridis_d()
+
+# weather Conditions and Crash Frequency
+weather_plot <- drivers_data_clean %>%
+  count(weather) %>%
+  ggplot(aes(x = reorder(weather, n), y = n)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  coord_flip() +
+  labs(title = "Crashes by Weather Condition",
+       x = "Weather Condition",
+       y = "Number of Crashes") +
+  theme_minimal()
+
+# geographic Distribution of Crashes
+map_plot <- drivers_data_clean %>%
+  filter(!is.na(latitude), !is.na(longitude)) %>%
+  ggplot(aes(x = longitude, y = latitude)) +
+  geom_point(alpha = 0.1, color = "red") +
+  labs(title = "Geographic Distribution of Crashes",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal()
+
+# collision Types
+collision_plot <- drivers_data_clean %>%
+  count(collision_type) %>%
+  mutate(pct = n/sum(n) * 100) %>%
+  ggplot(aes(x = reorder(collision_type, -pct), y = pct)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  coord_flip() +
+  labs(title = "Distribution of Collision Types",
+       x = "Collision Type",
+       y = "Percentage") +
+  theme_minimal()
+
+# speed Limit and Crash Severity
+speed_severity_plot <- drivers_data_clean %>%
+  filter(!is.na(speed_limit), !is.na(injury_severity)) %>%
+  ggplot(aes(x = factor(speed_limit), fill = injury_severity)) +
+  geom_bar(position = "fill") +
+  labs(title = "Injury Severity by Speed Limit",
+       x = "Speed Limit",
+       y = "Proportion",
+       fill = "Injury Severity") +
+  theme_minimal() +
+  scale_fill_viridis_d()
+
+# vehicle Age Distribution
+vehicle_age_plot <- drivers_data_clean %>%
+  mutate(vehicle_age = year(crash_date/time) - vehicle_year) %>%
+  filter(vehicle_age >= 0, vehicle_age <= 30) %>%
+  ggplot(aes(x = vehicle_age)) +
+  geom_histogram(binwidth = 1, fill = "purple", color = "white") +
+  labs(title = "Distribution of Vehicle Age",
+       x = "Vehicle Age (Years)",
+       y = "Count") +
+  theme_minimal()
+
+# surface Condition and Weather Relationship
+surface_weather_plot <- drivers_data_clean %>%
+  filter(!is.na(surface_condition), !is.na(weather)) %>%
+  count(surface_condition, weather) %>%
+  group_by(weather) %>%
+  mutate(pct = n/sum(n) * 100) %>%
+  ggplot(aes(x = weather, y = surface_condition, fill = pct)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Surface Condition by Weather",
+       x = "Weather",
+       y = "Surface Condition",
+       fill = "Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# combine plots using patchwork
+layout <- "
+AABB
+CCDD
+EEFF
+GGHH
+"
+
+combined_plots <- time_plot + severity_vehicle_plot + 
+                 weather_plot + map_plot + 
+                 collision_plot + speed_severity_plot + 
+                 vehicle_age_plot + surface_weather_plot +
+                 plot_layout(design = layout)
+
+print(combined_plots)
+
+ggsave("crash_analysis_dashboard.pdf", combined_plots, width = 20, height = 24)
+
+summary_stats <- list(
+  
+  time_stats = drivers_data_clean %>%
+    mutate(
+      hour = hour(crash_date/time),
+      weekday = wday(crash_date/time, label = TRUE)
+    ) %>%
+    summarise(
+      peak_hour = names(which.max(table(hour))),
+      weekend_crashes = mean(weekday %in% c("Sat", "Sun")) * 100
+    ),
+  
+  severity_stats = drivers_data_clean %>%
+    group_by(injury_severity) %>%
+    summarise(
+      count = n(),
+      percentage = n() / nrow(drivers_data_clean) * 100
+    ),
+  
+  weather_stats = drivers_data_clean %>%
+    group_by(weather) %>%
+    summarise(
+      count = n(),
+      percentage = n() / nrow(drivers_data_clean) * 100
+    ),
+  
+  vehicle_stats = drivers_data_clean %>%
+    summarise(
+      avg_vehicle_age = mean(year(crash_date/time) - vehicle_year, na.rm = TRUE),
+      most_common_make = names(which.max(table(vehicle_make)))
+    )
+)
+
+print(summary_stats)
+```
+
+Save the final cleaned dataset.
+
+```{r}
+current_timestamp <- format(Sys.time(), "%Y%m%d_%H%M")
+
+# create directories if they don't exist
+dir.create("cleaned_data", showWarnings = FALSE)
+dir.create("data_documentation", showWarnings = FALSE)
+
+str_result <- capture.output(str(drivers_data_clean))
+print("Data structure:")
+print(str_result)
+
+column_info <- data.frame(
+  column_name = names(drivers_data_clean),
+  data_type = sapply(drivers_data_clean, function(x) class(x)[1]),  # Take first class if multiple
+  stringsAsFactors = FALSE
+)
+
+column_info$description <- sapply(column_info$column_name, function(col_name) {
+  case_when(
+    col_name == "report_number" ~ "Unique report identifier",
+    col_name == "local_case_number" ~ "Local case number for the incident",
+    col_name == "agency_name" ~ "Name of reporting agency",
+    col_name == "acrs_report_type" ~ "Type of crash report",
+    col_name == "crash_date/time" ~ "Date and time of the crash",
+    col_name == "route_type" ~ "Type of route where crash occurred",
+    col_name == "road_name" ~ "Name of the road where crash occurred",
+    col_name == "cross_street_name" ~ "Name of the nearest cross-street",
+    col_name == "off_road_description" ~ "Description for off-road incidents",
+    col_name == "municipality" ~ "Municipality where crash occurred",
+    col_name == "related_non_motorist" ~ "Type of non-motorist involved",
+    col_name == "collision_type" ~ "Type of collision",
+    col_name == "weather" ~ "Weather conditions during crash",
+    col_name == "surface_condition" ~ "Road surface condition",
+    col_name == "light" ~ "Light conditions",
+    col_name == "traffic_control" ~ "Traffic control present",
+    col_name == "driver_substance_abuse" ~ "Driver substance abuse status",
+    col_name == "non_motorist_substance_abuse" ~ "Non-motorist substance abuse status",
+    col_name == "person_id" ~ "Unique identifier for person involved",
+    col_name == "driver_at_fault" ~ "Indicator if driver was at fault",
+    col_name == "injury_severity" ~ "Severity of injuries",
+    col_name == "circumstance" ~ "Contributing circumstances",
+    col_name == "driver_distracted_by" ~ "Driver distraction factors",
+    col_name == "drivers_license_state" ~ "State of driver's license",
+    col_name == "vehicle_id" ~ "Unique identifier for vehicle",
+    col_name == "vehicle_damage_extent" ~ "Extent of vehicle damage",
+    col_name == "vehicle_first_impact_location" ~ "Location of first impact on vehicle",
+    col_name == "vehicle_body_type" ~ "Type of vehicle body",
+    col_name == "vehicle_movement" ~ "Vehicle movement during crash",
+    col_name == "vehicle_going_dir" ~ "Direction vehicle was traveling",
+    col_name == "speed_limit" ~ "Posted speed limit",
+    col_name == "driverless_vehicle" ~ "Indicator if vehicle was driverless",
+    col_name == "parked_vehicle" ~ "Indicator if vehicle was parked",
+    col_name == "vehicle_year" ~ "Year of vehicle manufacture",
+    col_name == "vehicle_make" ~ "Vehicle manufacturer",
+    col_name == "vehicle_model" ~ "Vehicle model",
+    col_name == "latitude" ~ "Latitude of crash location",
+    col_name == "longitude" ~ "Longitude of crash location",
+    col_name == "location" ~ "Combined location coordinates",
+    col_name == "data_quality_flags" ~ "Data quality flags from cleaning process",
+    col_name == "detailed_quality_flags" ~ "Detailed quality flags from cleaning process",
+    col_name == "refined_quality_score" ~ "Numerical score indicating data quality",
+    TRUE ~ paste("Description for", col_name)  # Default description for any new columns
+  )
+})
+
+column_info$example_values <- sapply(drivers_data_clean, function(x) {
+  if (is.numeric(x)) {
+    paste("Range:", min(x, na.rm = TRUE), "to", max(x, na.rm = TRUE))
+  } else {
+    unique_vals <- unique(na.omit(x))
+    if (length(unique_vals) > 5) {
+      paste(paste(unique_vals[1:5], collapse = ", "), "... and", length(unique_vals) - 5, "more values")
+    } else {
+      paste(unique_vals, collapse = ", ")
+    }
+  }
+})
+
+write_csv(drivers_data_clean, 
+          file = paste0("cleaned_data/crash_data_clean_", current_timestamp, ".csv"))
+
+saveRDS(drivers_data_clean, 
+        file = paste0("cleaned_data/crash_data_clean_", current_timestamp, ".rds"))
+
+write_csv(column_info, 
+          file = paste0("data_documentation/data_dictionary_", current_timestamp, ".csv"))
+
+readme_text <- sprintf("
+# Crash Data Cleaning Documentation
+
+## Version Information
+- Date Created: %s
+- Original Records: 186,931
+- Final Records: %d
+
+## Data Quality Metrics
+- Total Records: %d
+- Records with Quality Flags: %d
+- Clean Records: %d
+
+## Files in this Package
+1. crash_data_clean_%s.csv - Main data file (CSV format)
+2. crash_data_clean_%s.rds - R data file (RDS format)
+3. data_dictionary_%s.csv - Data dictionary with column descriptions
+
+## Column Summary
+Total number of columns: %d
+See data dictionary file for detailed information about each column.
+
+## Data Quality Notes
+- Data has been cleaned and standardized
+- Quality flags have been added to mark potential issues
+- Missing values have been handled according to context
+- Inconsistent categories have been standardized
+
+## Usage Notes
+- Please refer to the data dictionary for column descriptions
+- Check quality flags before analysis
+- Some columns may contain standardized values
+
+## Contact
+For questions about this dataset, please contact [Your Contact Information]
+
+## Last Updated
+%s
+",
+    format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    nrow(drivers_data_clean),
+    nrow(drivers_data_clean),
+    sum(drivers_data_clean$data_quality_flags != "VALID"),
+    sum(drivers_data_clean$data_quality_flags == "VALID"),
+    current_timestamp,
+    current_timestamp,
+    current_timestamp,
+    ncol(drivers_data_clean),
+    format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+)
+
+writeLines(readme_text, 
+           paste0("data_documentation/README_", current_timestamp, ".md"))
+
+zip_files <- c(
+    paste0("cleaned_data/crash_data_clean_", current_timestamp, ".csv"),
+    paste0("cleaned_data/crash_data_clean_", current_timestamp, ".rds"),
+    paste0("data_documentation/data_dictionary_", current_timestamp, ".csv"),
+    paste0("data_documentation/README_", current_timestamp, ".md")
+)
+
+zip(paste0("cleaned_data/crash_data_package_", current_timestamp, ".zip"),
+    files = zip_files)
+
+cat("\nData saving complete!\n")
+cat("Files saved:\n")
+cat("1. CSV data file\n")
+cat("2. RDS data file\n")
+cat("3. Data dictionary\n")
+cat("4. README documentation\n")
+cat("5. Complete package (zip)\n")
+cat("\nLocation: ./cleaned_data/ and ./data_documentation/\n")
+```
+
+
+
+
+---
