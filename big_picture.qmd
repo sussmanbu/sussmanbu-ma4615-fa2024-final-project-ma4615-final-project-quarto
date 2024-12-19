@@ -1,13 +1,14 @@
 ---
-title: "Exposing the Secrets Behind Car Crashes in Montgomery County – You’ll Be Shocked!"
+title: Exposing the Secrets Behind Car Crashes in Montgomery County – You’ll Be Shocked!
 description: "A look into what truly causes car crashes in Montgomery County, Maryland"
-author: "Group 1"
+author: Crash Out
 toc: true
 draft: FALSE
 filters: 
   - shinylive
 ---
 
+![](images/montmap.jpg)
 In Montgomery County, Maryland, efforts to enhance traffic safety are supported by a rich array of public data. These datasets, ranging from road conditions to detailed crash reports, offer valuable insights into the factors influencing accidents. While deteriorating roads are often perceived as the primary hazard, the data reveals a more complex reality. Analysis shows that although poor road conditions do contribute to accidents, other factors—such as weather and driver behavior—play equally significant roles, underscoring the multifaceted nature of improving road safety.
 
 To find out, we dug into the data to see how road quality, weather, and surface conditions shape the likelihood of accidents. What we found might surprise you. While pavement conditions do play a role, they’re far from the whole story.

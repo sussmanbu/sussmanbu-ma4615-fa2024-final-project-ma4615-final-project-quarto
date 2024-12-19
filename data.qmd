@@ -1,5 +1,7 @@
 ---
-title: Data Cleaning
+title: "Journey Through Data: Exploring Insights and Innovations"
+author: Crash Out
+description: "Cleaning and Refining Montgomery County's publicly available crash, road, and weather data to ensure accuracy and uncover meaningful patterns for traffic safety analysis."
 toc: true
 draft: false
 ---

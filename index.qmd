@@ -1,5 +1,7 @@
 ---
 title: "Road Real Talk: Crashes, Conditions, and Rescue"
+description: "Dive into our blog posts to explore the story behind our research and discoveries!"
+author: Crash Out
 listing:
   contents: "posts/*/*.qmd"
   sort: "date desc"

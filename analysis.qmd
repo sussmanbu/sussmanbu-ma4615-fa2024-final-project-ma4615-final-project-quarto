@@ -1,5 +1,7 @@
 ---
-title: Analysis
+title: "Roads, Weather, and Reality: Exploring the Factors Behind Traffic Safety"
+author: Crash Out
+description: "In-depth analysis of road and weather conditions and their impact on car crash occurrences."
 toc: true
 draft: false
 ---
