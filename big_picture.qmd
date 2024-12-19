@@ -1,6 +1,6 @@
 ---
 title: "Exposing the Secrets Behind Car Crashes in Montgomery County – You’ll Be Shocked!"
-description: ""
+description: "A look into what truly causes car crashes in Montgomery County, Maryland"
 author: "Group 1"
 toc: true
 draft: FALSE
@@ -16,17 +16,9 @@ To find out, we dug into the data to see how road quality, weather, and surface 
 
 Using the Pavement Condition Index (PCI) dataset maintained by the Montgomery County Department of Transportation, researchers evaluated whether road quality directly influences traffic collisions. The PCI rates road conditions on a scale from 1 to 100, with lower scores indicating poorer quality.
 
-A comparison of crash data from the county’s Automated Crash Reporting System (ACRS) revealed only a weak correlation between low PCI scores and higher accident rates. Contrary to popular belief, even roads in poor condition (PCI scores of 0–30) were not consistently associated with significantly higher crash frequencies.
-
-This finding indicates that while poor roads may contribute to accidents, they are not the primary factor.
+A comparison of crash data from the county’s Automated Crash Reporting System (ACRS) revealed only a weak correlation between low PCI scores and higher accident rates. Contrary to popular belief, even roads in poor condition (PCI scores of 0–30) were not consistently associated with significantly higher crash frequencies.This finding indicates that while poor roads may contribute to accidents, they are not the primary factor.
 
 ![](scripts/plot intial.png)
-
-**Weather Conditions and Their Surprising Impact**
-
-The crash data, collected by various law enforcement agencies, shows that weather plays a critical role in traffic safety. Wet road surfaces, a common result of storms or rain, were linked to increased accident counts. However, an interesting trend emerged: accidents often decreased during rainstorms.
-
-Experts hypothesize that this counterintuitive trend occurs because drivers exercise greater caution during active rainfall, reducing their speed and increasing following distances. However, residual wet surfaces after rain still pose a heightened risk, especially when drivers resume normal speeds.
 
 **Other Key Factors in Accidents**
 
@@ -36,23 +28,21 @@ Driver Behavior: Distraction and substance use were common factors in many colli
 
 Light Conditions: Reduced visibility during dusk and nighttime hours also correlated with higher accident rates, emphasizing the need for better lighting infrastructure.
 
-
-**The Big Takeaways: Better Roads Help—But Not Much**
-
-While smoother pavement is linked to slightly fewer accidents, the effect is small. Weather and Wet Roads Matter More Wet roads increase accidents, while rainy weather may make drivers more cautious. The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role. What This Means for Safer Roads
-
-Our findings point to a broader truth
-
-keeping roads safe takes more than just paving over potholes. It means targeting the biggest risks, like managing wet-road hazards and encouraging safer driving during bad weather.
-
-By understanding these dynamics, we can make smarter decisions—whether that’s where to invest in road improvements or how to educate drivers about staying safe in tough conditions.
+As Montgomery County harnesses the power of open data, it becomes increasingly clear how vital it is to challenge common misconceptions about traffic safety. For instance, while poor road conditions often take the blame for accidents, the data reveals that factors like human behavior and weather are just as critical. By analyzing and understanding these trends, the community can adopt more effective strategies for prevention.
 
 **Get Behind the Wheel, Explore the Data Yourself**
 
-Want to see these patterns for yourself? We’ve built an interactive dashboard where you can dig into the data.
+Curious about what really drives traffic accidents in Montgomery County? Now you can explore the data for yourself with our user-friendly interactive dashboard!
 
-Toggle between weather conditions to see how rain or wet roads impact accident trends. It’s an easy way to explore what’s happening on our roads and what factors matter most.
+Dive into the numbers and uncover fascinating patterns. Want to see how weather conditions influence crashes? Toggle between rain, dry roads, and other scenarios to track trends and reveal the surprising factors at play.
 
+The dashboard features two key visualizations:
+
+Bar Graphs: One breaks down crash trends by road surface conditions, showing that most accidents occur on dry roads. The other focuses on injury severity, where the majority of collisions result in no apparent injuries.
+Histogram: Adjust the bins to analyze speed limits at crash sites. You’ll notice a bell-shaped curve, with most accidents clustering around an average speed limit of 29 mph.
+With 50 rows of detailed data to explore, this tool offers an engaging way to understand the nuances of traffic safety. From injury outcomes to environmental conditions, the dashboard brings the story of our roads to life.
+
+Ready to dig in? Discover the trends shaping our community’s roadways and see for yourself what factors matter most.
 
 ```{shinylive-r}
 #| echo: false
