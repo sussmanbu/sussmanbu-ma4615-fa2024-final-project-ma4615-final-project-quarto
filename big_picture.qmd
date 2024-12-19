@@ -1,51 +1,45 @@
 ---
-title: "Story and Question"
+title: "Exposing the Secrets Behind Car Crashes in Montgomery County – You’ll Be Shocked!"
 description: ""
+author: "Group 1"
 toc: true
 draft: FALSE
 filters: 
   - shinylive
 ---
 
-Potholes, cracks, and worn-out pavement—when we think about what causes traffic accidents, poor road conditions are often the first thing that comes to mind. But is the connection as straightforward as it seems?
+In Montgomery County, Maryland, efforts to enhance traffic safety are supported by a rich array of public data. These datasets, ranging from road conditions to detailed crash reports, offer valuable insights into the factors influencing accidents. While deteriorating roads are often perceived as the primary hazard, the data reveals a more complex reality. Analysis shows that although poor road conditions do contribute to accidents, other factors—such as weather and driver behavior—play equally significant roles, underscoring the multifaceted nature of improving road safety.
 
 To find out, we dug into the data to see how road quality, weather, and surface conditions shape the likelihood of accidents. What we found might surprise you. While pavement conditions do play a role, they’re far from the whole story.
 
-**Road Quality Isn’t Everything**
+**Does Pavement Quality Correlate with Accidents?**
 
-Roads are rated by the Pavement Condition Index (PCI), which measures their quality on a scale from terrible to perfect. If bad roads mean more accidents, we should see a clear relationship between PCI and accident counts.
+Using the Pavement Condition Index (PCI) dataset maintained by the Montgomery County Department of Transportation, researchers evaluated whether road quality directly influences traffic collisions. The PCI rates road conditions on a scale from 1 to 100, with lower scores indicating poorer quality.
 
-Instead? The connection is weak. A scatter plot with a trend line shows that while better roads slightly reduce accidents, the trend is subtle.
+A comparison of crash data from the county’s Automated Crash Reporting System (ACRS) revealed only a weak correlation between low PCI scores and higher accident rates. Contrary to popular belief, even roads in poor condition (PCI scores of 0–30) were not consistently associated with significantly higher crash frequencies.
 
-What does this mean? Road conditions alone don’t explain much. Other factors—like weather and what’s on the road surface—may matter even more.
+This finding indicates that while poor roads may contribute to accidents, they are not the primary factor.
 
-**When Weather and Wet Roads Take the Wheel**
+![](scripts/plot intial.png)
 
-Here’s where it gets interesting, wet surfaces (like roads after a storm) significantly increase accident counts.Rainy weather, on the other hand, seems to have the opposite effect—it actually reduces accidents.How does that make sense? It turns out drivers tend to slow down and be more careful when it’s raining, even though wet roads themselves are a major hazard.
+**Weather Conditions and Their Surprising Impact**
 
-A multivariate visualization brings this dynamic to life, showing how weather and surface conditions interact with PCI to impact accidents.
+The crash data, collected by various law enforcement agencies, shows that weather plays a critical role in traffic safety. Wet road surfaces, a common result of storms or rain, were linked to increased accident counts. However, an interesting trend emerged: accidents often decreased during rainstorms.
 
-**It’s Not a Straight Line Complex Patterns in the Data**
+Experts hypothesize that this counterintuitive trend occurs because drivers exercise greater caution during active rainfall, reducing their speed and increasing following distances. However, residual wet surfaces after rain still pose a heightened risk, especially when drivers resume normal speeds.
 
-When we examined the relationship between PCI and accidents further, a surprising pattern emerged. Instead of a simple straight-line relationship, we found a U-shaped trend.
+**Other Key Factors in Accidents**
 
-This means accidents were more frequent at moderate PCI levels than at very high or very low PCI levels. Why? It’s hard to say for sure, but this might reflect how drivers behave or how other factors like traffic volume play a role.
+The detailed crash reports highlight other significant contributors to traffic incidents:
 
-Our polynomial regression plot captures this complexity and adds a new layer to the story, road conditions affect accidents in more complicated ways than we expected.
+Driver Behavior: Distraction and substance use were common factors in many collisions, underscoring the importance of driver accountability.
 
-**Get Behind the Wheel, Explore the Data Yourself**
+Light Conditions: Reduced visibility during dusk and nighttime hours also correlated with higher accident rates, emphasizing the need for better lighting infrastructure.
 
-Want to see these patterns for yourself? We’ve built an interactive dashboard where you can dig into the data.
-
-Toggle between weather conditions to see how rain or wet roads impact accident trends. Compare the results of linear and nonlinear models to understand the bigger picture. It’s an easy way to explore what’s happening on our roads and what factors matter most.
 
 **The Big Takeaways: Better Roads Help—But Not Much**
 
-While smoother pavement is linked to slightly fewer accidents, the effect is small. Weather and Wet Roads Matter More Wet roads increase accidents, while rainy weather may make drivers more cautious.
-
-Complex Relationships
-
-The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role. What This Means for Safer Roads
+While smoother pavement is linked to slightly fewer accidents, the effect is small. Weather and Wet Roads Matter More Wet roads increase accidents, while rainy weather may make drivers more cautious. The U-shaped trend between PCI and accidents shows how other factors—like driver behavior or traffic flow—play a big role. What This Means for Safer Roads
 
 Our findings point to a broader truth
 
@@ -53,13 +47,19 @@ keeping roads safe takes more than just paving over potholes. It means targeting
 
 By understanding these dynamics, we can make smarter decisions—whether that’s where to invest in road improvements or how to educate drivers about staying safe in tough conditions.
 
-So, the next time you drive on a cracked road or slow down in the rain, remember, every condition tells a story. And with the right insights, we can make that story a little safer for everyone.
+**Get Behind the Wheel, Explore the Data Yourself**
+
+Want to see these patterns for yourself? We’ve built an interactive dashboard where you can dig into the data.
+
+Toggle between weather conditions to see how rain or wet roads impact accident trends. It’s an easy way to explore what’s happening on our roads and what factors matter most.
+
 
 ```{shinylive-r}
 #| echo: false
 #| standalone: true
 #| viewerHeight: 640
 #| embed-resources: false 
+#| 
 suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(tidyverse))
 
